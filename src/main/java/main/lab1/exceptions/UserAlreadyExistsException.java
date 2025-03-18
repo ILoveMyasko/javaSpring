@@ -1,0 +1,7 @@
+package main.lab1.exceptions;
+
+public class UserAlreadyExistsException extends RuntimeException {
+    public UserAlreadyExistsException(int id) {
+        super(("User with id = " +  id + " already exists"));
+    }
+}
