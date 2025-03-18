@@ -4,7 +4,6 @@ package main.lab1.services;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import main.lab1.entities.User;
 import main.lab1.exceptions.UserAlreadyExistsException;

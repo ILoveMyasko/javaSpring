@@ -17,6 +17,6 @@ public class Task {
     @NotEmpty String taskTitle;
     @NotEmpty String taskDescription;
     final ZonedDateTime createdAt = ZonedDateTime.now();
-    @Valid ZonedDateTime expiresAt;
-    boolean isCompleted=false;
+    ZonedDateTime expiresAt;
+    boolean isCompleted=false; //redundant?
 }

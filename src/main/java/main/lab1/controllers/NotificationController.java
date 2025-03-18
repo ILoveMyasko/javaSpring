@@ -2,7 +2,6 @@ package main.lab1.controllers;
 
 import jakarta.validation.Valid;
 import main.lab1.entities.Notification;
-import main.lab1.entities.Task;
 import main.lab1.services.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

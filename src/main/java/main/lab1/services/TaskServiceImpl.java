@@ -1,18 +1,14 @@
 package main.lab1.services;
 
 import main.lab1.entities.Task;
-import main.lab1.entities.User;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
-import main.lab1.exceptions.UserAlreadyExistsException;
-import main.lab1.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImpl implements TaskService {
