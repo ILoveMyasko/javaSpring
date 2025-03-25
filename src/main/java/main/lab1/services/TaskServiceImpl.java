@@ -29,8 +29,8 @@ public class TaskServiceImpl implements TaskService {
         tasks.put(task.getId(), task);
     }
 
+    //but this returns not pointers
     public List<Task> getAllTasks() {
-
         return new ArrayList<>(tasks.values());
     }
 
