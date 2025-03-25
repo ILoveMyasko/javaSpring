@@ -1,0 +1,75 @@
+package main.lab1.serviceTests;
+
+import main.lab1.entities.User;
+import main.lab1.exceptions.UserAlreadyExistsException;
+import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.services.UserServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+//unit tests
+public class UserServiceTest {
+    private UserServiceImpl userService;
+    @BeforeEach
+    void setUp() {
+        userService = new UserServiceImpl(); // на лекции ходили, вовзращаемся в исходное состояние после каждого теста
+    }
+
+    @Test
+    void createUser_WithNewId_ShouldAddUser() {
+        // Arrange
+        User user = new User(1, "Alex", "alex@ex.com");
+
+        userService.createUser(user);
+        // Assert
+        assertDoesNotThrow(() -> userService.getUserById(1));
+    }
+    @Test
+    void createUser_WithExistingId_ShouldThrowException() {
+        User user = new User(1, "Alex", "alex@ex.com");
+        User user2 = new User(1, "Anna", "anna@example.com");
+        userService.createUser(user);
+        assertThrows(
+                UserAlreadyExistsException.class, //what exception will be thrown
+                () -> userService.createUser(user2) // anonymous object calls function. cant just write function because then it would
+                                                    // just be calculated. ()-> returns a function.
+        );
+    }
+    @Test
+    void getUser_WithExistingId_ShouldReturnUser() {
+        User expectedUser = new User(1, "Alex", "alex@ex.com");
+        userService.createUser(expectedUser);
+        User actualUser = userService.getUserById(1);
+        assertEquals(expectedUser, actualUser);//ignore that we can throw an exception because this fails the test anyway
+    }
+    @Test
+    void getUser_WithNonExistentId_ShouldThrowException() {
+        User user = new User(1, "Alex", "alex@ex.com");
+        userService.createUser(user);
+        assertThrows(
+                UserNotFoundException.class, //what exception will be thrown
+                ()->userService.getUserById(2));
+    }
+
+    @Test
+    void getAllUsers_WithNoUsers_ShouldReturnEmptyList(){
+        assertTrue(userService.getAllUsers().isEmpty());
+    }
+    @Test
+    void getAllUsers_WithUsers_ShouldReturnListOfAllUsers(){
+        User user1 = new User(1, "Alex", "alex@example.com");
+        User user2 = new User(2, "Anna", "anna@example.com");
+        userService.createUser(user1);
+        userService.createUser(user2);
+        List<User> users = userService.getAllUsers();
+        assertAll(//assert there are exactly 2 users and both inserted are present
+                () -> assertEquals(2, users.size()),
+                () -> assertTrue(users.contains(user1)),
+                () -> assertTrue(users.contains(user2))
+        );
+
+    }
+
+}
