@@ -2,9 +2,7 @@ package main.lab1.services;
 
 import main.lab1.entities.User;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-//import java.util.Optional;
+import java.util.List;
 
 @Service
 public interface UserService {
@@ -13,7 +11,7 @@ public interface UserService {
 
     void createUser(User user);
 
-    ArrayList<User> getAllUsers();
+   List<User> getAllUsers();
 
 
 }

@@ -15,7 +15,7 @@ import java.util.List;
 public class UserController {
 
     //@Autowired // not necessary if 1 constructor since spring version 3.3+?
-    private final UserService userService; //dependency injection soliD
+    private final UserService userService; //dependency injection from solid
 
     UserController(UserService userService) {
         this.userService = userService;
@@ -31,7 +31,7 @@ public class UserController {
         //this is the best way to do it? using exception UserNotFound
         return ResponseEntity.ok(userService.getUserById(uId));
 
-        //functional way:
+//        //functional way:
 //         return userService.getUserById(uId)
 //        .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
 //        .orElse(ResponseEntity.notFound().build());
@@ -41,7 +41,6 @@ public class UserController {
     public void createUser(@RequestBody @Valid User user) { //request body build User object through json?
         userService.createUser(user);
     }
-
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e) {

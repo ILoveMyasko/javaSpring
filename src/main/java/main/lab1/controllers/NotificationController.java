@@ -31,8 +31,9 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getNotificationsByTaskId(uId));
     }
     //not required but how to create notifs?
+    //okay some of them can be created automatically but only some not all.
     @PostMapping
-    public void createTask(@RequestBody @Valid Notification notification) { //request body builds Notification object through json?
+    public void createNotification(@RequestBody @Valid Notification notification) { //request body builds Notification object through json?
         notificationService.createNotification(notification);
     }
 }
