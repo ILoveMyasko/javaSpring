@@ -9,31 +9,34 @@ import java.util.Map;
 import main.lab1.model.User;
 import main.lab1.exceptions.UserAlreadyExistsException;
 import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.repos.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    //static?
-    private final Map<Integer, User> users = new HashMap<Integer, User>(); // can skip <> params since java 7
+    private final UserRepository userRepository;
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    public void createUser(User user) {
-        if (users.containsKey(user.getId())) {
+    public User createUser(User user) {
+        // Проверяем существование пользователя по ID
+        if (userRepository.existsById(user.getId())) {
             throw new UserAlreadyExistsException(user.getId());
         }
-        users.put(user.getId(), user);
-    }
-    //streams don't create a copy
-    public User getUserById(int id) {
-        if (!users.containsKey(id)) {
-            throw new UserNotFoundException(id);
-        } else return users.get(id);
+        return userRepository.save(user);
     }
 
+    public User getUserById(long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+    }
 
     public List<User> getAllUsers() {
-        return new ArrayList<>(users.values());
+        return userRepository.findAll();
     }
-
 
 }

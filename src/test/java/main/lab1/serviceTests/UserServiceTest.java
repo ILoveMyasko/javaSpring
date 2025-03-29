@@ -3,19 +3,31 @@ package main.lab1.serviceTests;
 import main.lab1.model.User;
 import main.lab1.exceptions.UserAlreadyExistsException;
 import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.repos.UserRepository;
+import main.lab1.services.UserService;
 import main.lab1.services.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 //unit tests
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
-    private UserServiceImpl userService;
-    @BeforeEach
-    void setUp() {
-        userService = new UserServiceImpl(); // на лекции ходили, вовзращаемся в исходное состояние после каждого теста
-    }
+    //private UserServiceImpl userService;
+    @Mock
+    private UserRepository userRepository;
+    @InjectMocks
+    private UserServiceImpl userService; // or interface?
+//    @BeforeEach
+//    void setUp() {
+//        userService = new UserServiceImpl(); // на лекции ходили, вовзращаемся в исходное состояние после каждого теста
+//    }
 
     @Test
     void createUser_WithNewId_ShouldAddUser() {
