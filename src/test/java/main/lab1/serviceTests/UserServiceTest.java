@@ -1,6 +1,6 @@
 package main.lab1.serviceTests;
 
-import main.lab1.entities.User;
+import main.lab1.model.User;
 import main.lab1.exceptions.UserAlreadyExistsException;
 import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.services.UserServiceImpl;

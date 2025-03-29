@@ -1,8 +1,9 @@
 package main.lab1.services;
 
-import main.lab1.entities.Task;
+import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.Map;
 public class TaskServiceImpl implements TaskService {
 
     private final Map<Integer, Task> tasks = new HashMap<>();
+    @Autowired
+    private UserService userService;
 
     public Task getTaskById(int id) {
         if (!tasks.containsKey(id)) {
@@ -23,6 +26,7 @@ public class TaskServiceImpl implements TaskService {
 
     //how to check whether user exists?
     public void createTask(Task task) {
+        userService.getUserById(task.getUserId()); // Дописать
         if (tasks.containsKey(task.getId())) {
             throw new TaskAlreadyExistsException(task.getId());
         }

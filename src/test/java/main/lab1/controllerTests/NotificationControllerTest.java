@@ -1,7 +1,7 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.NotificationController;
-import main.lab1.entities.Notification;
+import main.lab1.model.Notification;
 import main.lab1.services.NotificationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,6 @@
 package main.lab1.serviceTests;
 
-import main.lab1.entities.Task;
+import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskServiceImpl;

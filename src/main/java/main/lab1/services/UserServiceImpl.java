@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import main.lab1.entities.User;
+import main.lab1.model.User;
 import main.lab1.exceptions.UserAlreadyExistsException;
 import main.lab1.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
         }
         users.put(user.getId(), user);
     }
-    //streams still doesnt create a copy
+    //streams don't create a copy
     public User getUserById(int id) {
         if (!users.containsKey(id)) {
             throw new UserNotFoundException(id);

@@ -1,6 +1,7 @@
 package main.lab1.controllers;
 import jakarta.validation.Valid;
-import main.lab1.entities.Task;
+import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskService;
@@ -52,6 +53,11 @@ public class TaskController {
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

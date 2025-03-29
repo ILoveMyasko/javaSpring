@@ -1,6 +1,6 @@
 package main.lab1.serviceTests;
 
-import main.lab1.entities.Notification;
+import main.lab1.model.Notification;
 
 import main.lab1.services.NotificationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

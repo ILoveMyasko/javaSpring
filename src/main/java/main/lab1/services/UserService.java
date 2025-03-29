@@ -1,6 +1,6 @@
 package main.lab1.services;
 
-import main.lab1.entities.User;
+import main.lab1.model.User;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

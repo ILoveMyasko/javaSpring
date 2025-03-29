@@ -1,4 +1,4 @@
-package main.lab1.entities;
+package main.lab1.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

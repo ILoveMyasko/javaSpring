@@ -1,7 +1,7 @@
 package main.lab1.controllers;
 
 import jakarta.validation.Valid;
-import main.lab1.entities.User;
+import main.lab1.model.User;
 import main.lab1.exceptions.UserAlreadyExistsException;
 import main.lab1.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;

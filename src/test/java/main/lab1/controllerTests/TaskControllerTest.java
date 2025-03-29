@@ -1,7 +1,7 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.TaskController;
-import main.lab1.entities.Task;
+import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskService;
