@@ -1,8 +1,11 @@
 package main.lab1.services;
 
+import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
+import main.lab1.repos.TaskRepository;
+import main.lab1.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,35 +17,38 @@ import java.util.Map;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private final Map<Integer, Task> tasks = new HashMap<>();
+    //private final Map<Integer, Task> tasks = new HashMap<>();
+    final private TaskRepository taskRepository;
     @Autowired
     private UserService userService;
 
-    public Task getTaskById(int id) {
-        if (!tasks.containsKey(id)) {
-            throw new TaskNotFoundException(id);
-        } else return tasks.get(id);
+    public TaskServiceImpl(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
-    //how to check whether user exists?
-    public void createTask(Task task) {
+    public Task getTaskById(long id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    // since im no longer in control of generating IDs for users, how do I know an id of the user to create a task for him?
+    public Task createTask(Task task) {
         userService.getUserById(task.getUserId()); // Дописать
-        if (tasks.containsKey(task.getId())) {
+        if (taskRepository.existsById(task.getId())) {
             throw new TaskAlreadyExistsException(task.getId());
         }
-        tasks.put(task.getId(), task);
+        return taskRepository.save(task);
     }
 
-    //but this returns not pointers
     public List<Task> getAllTasks() {
-        return new ArrayList<>(tasks.values());
+        return taskRepository.findAll();
     }
 
-    public void deleteTaskById(int id) {
-        tasks.remove(id);
+    public void deleteTaskById(long id) {
+        taskRepository.deleteById(id);//ignored if not found. throw is definitely not a good idea
     }
 
-    public List<Task> getTasksByUserId(int id) {
-        return tasks.values().stream().filter(task -> task.getUserId() == id).toList();
+    public List<Task> getTasksByUserId(long id) {
+        return taskRepository.findByUserId(id);
     }
 }

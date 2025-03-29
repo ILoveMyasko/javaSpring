@@ -1,6 +1,7 @@
 package main.lab1.services;
 
 import main.lab1.model.Notification;
+import main.lab1.model.Task;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +10,9 @@ import java.util.List;
 public interface NotificationService {
     List<Notification> getAllNotifications();
 
-    List<Notification> getNotificationsByUserId(int userId);
+    List<Notification> getNotificationsByUserId(long userId);
 
-    List<Notification> getNotificationsByTaskId(int userId);
+    List<Notification> getNotificationsByTaskId(long userId);
 
     void createNotification(Notification notification);
 }

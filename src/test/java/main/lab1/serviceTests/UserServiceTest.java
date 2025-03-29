@@ -24,10 +24,7 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @InjectMocks
     private UserServiceImpl userService; // or interface?
-//    @BeforeEach
-//    void setUp() {
-//        userService = new UserServiceImpl(); // на лекции ходили, вовзращаемся в исходное состояние после каждого теста
-//    }
+
 
     @Test
     void createUser_WithNewId_ShouldAddUser() {

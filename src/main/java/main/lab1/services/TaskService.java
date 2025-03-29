@@ -8,13 +8,13 @@ import java.util.List;
 @Service
 public interface TaskService {
 
-    Task getTaskById(int id);
+    Task getTaskById(long id);
 
-    void createTask(Task task);
+    Task createTask(Task task);
 
     List<Task> getAllTasks();
 
-    void deleteTaskById(int id);
+    void deleteTaskById(long id); // do i return anything?
 
-    List<Task> getTasksByUserId(int id);
+    List<Task> getTasksByUserId(long id);
 }

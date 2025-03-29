@@ -8,6 +8,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor //mandatory for SpringJPA
 @Entity
 @Table(name = "users") //User is reserved name so gotta change to something else
 public class User {

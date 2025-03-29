@@ -3,19 +3,31 @@ package main.lab1.serviceTests;
 import main.lab1.model.Notification;
 
 import main.lab1.services.NotificationServiceImpl;
+import main.lab1.services.TaskService;
+import main.lab1.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 //unit tests
+@ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private TaskService taskService;
+
+    @InjectMocks
     private NotificationServiceImpl notificationService;
-    @BeforeEach
-    void setUp() {
-        notificationService = new NotificationServiceImpl();
-    }
 
     @Test
     void createNotification_ShouldCreateOneNotification() {

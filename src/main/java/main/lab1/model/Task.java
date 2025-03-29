@@ -1,37 +1,43 @@
 package main.lab1.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
 
 @Data
 @EqualsAndHashCode
+@Entity
+@NoArgsConstructor //mandatory for SpringJPA
+@Table(name = "tasks")
 public class Task {
 
-    @Positive int id; //primitives cannot be null
-    @Positive int userId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id; //primitives cannot be null
+    @Positive long userId;
     @NotEmpty String taskTitle;
     @NotEmpty String taskDescription;
     final ZonedDateTime createdAt = ZonedDateTime.now();
     ZonedDateTime expiresAt;
-    boolean isCompleted=false; //redundant?
+    boolean isCompleted = false;
 
     @AssertTrue(message = "expiresAt must be after createdAt")
     private boolean isExpiresAtValid() {
         return expiresAt == null || expiresAt.isAfter(createdAt);
     }
 
-    public Task(int id, int userId, String taskTitle, String taskDescription, ZonedDateTime expiresAt) {
+    public Task(long id, long userId, String taskTitle, String taskDescription, ZonedDateTime expiresAt) {
         this.id = id;
         this.userId = userId;
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.expiresAt = expiresAt;
         // createdAt = .now
-        // isCompleted false default
+        // isCompleted = false default
     }
 }

@@ -4,8 +4,13 @@ import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskServiceImpl;
+import main.lab1.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -13,12 +18,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 //unit tests
+@ExtendWith(MockitoExtension.class)
 public class TaskServiceTest {
+
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
     private TaskServiceImpl taskService;
-    @BeforeEach
-    void setUp() {
-        taskService = new TaskServiceImpl(); // на лекции ходили, вовзращаемся в исходное состояние после каждого теста
-    }
 
     @Test
     void createTask_WithNewId_ShouldAddTask() {
