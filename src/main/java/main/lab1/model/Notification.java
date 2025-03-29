@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "notifications")
 public class Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int userId;
-    @Positive int taskId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long notificationId;
+    @Positive long userId;
+    @Positive long taskId;
     @NotEmpty String text;
     final LocalDateTime createdAt = LocalDateTime.now();
 }
