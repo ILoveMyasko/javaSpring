@@ -1,7 +1,6 @@
 package main.lab1.services;
 
 import main.lab1.model.Notification;
-import main.lab1.model.Task;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
