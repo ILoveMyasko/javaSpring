@@ -11,8 +11,7 @@ import lombok.*;
 @Entity
 @Table(name = "users") //User is reserved name so gotta change to something else
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private @NotBlank String name;
     private @Email String email;

@@ -30,7 +30,7 @@ public class NotificationServiceTest {
 
     @Test
     void createNotification_ShouldCreateOneNotification() {
-        Notification notification = new Notification(1,1,"Notification");
+        Notification notification = new Notification(1,1,1,"Notification");
         notificationService.createNotification(notification);
         List<Notification> notifications = notificationService.getAllNotifications();
 
