@@ -5,18 +5,19 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:h2:tcp://h2-db:9092/mem:testdb;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
-      - SPRING_DATASOURCE_USERNAME=sa
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/testdb
     depends_on:
       - h2-db
 
   h2-db:
     image: oscarfonts/h2
-    command: -tcp -tcpAllowOthers -tcpPort 9092 -ifNotExists -tcpDaemon
+    container_name: h2db
     ports:
-      - "9092:9092"
-      - "8082:8082"
-    #environment:
-    #  - H2_OPTIONS=-tcp -tcpAllowOthers -tcpPort 9092
+      - "1521:1521"
+      - "81:81" #<-это обязательно
+    environment:
+      H2_OPTIONS: "-ifNotExists"
+    volumes:
+      - h2-data:/root
+volumes:
+  h2-data:
