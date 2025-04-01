@@ -1,6 +1,7 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.TaskController;
+import main.lab1.model.Notification;
 import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
@@ -67,7 +68,7 @@ public class TaskControllerTest {
     @Test
     void getTaskById_WithExistingId_ReturnsEntityWithTask() {
         // Arrange
-        int taskId = 1;
+        long taskId = 1;
         Task mockTask = new Task(1,1,"Title","Description", ZonedDateTime.now().plusHours(3));
 
         when(taskService.getTaskById(taskId)).thenReturn(mockTask);
@@ -82,7 +83,7 @@ public class TaskControllerTest {
 
     @Test
     void getTaskById_WithNonExistentId_ThrowsTaskNotFoundException() {
-        int invalidId = 999;
+        long invalidId = 999;
         when(taskService.getTaskById(invalidId))
                 .thenThrow(new TaskNotFoundException(invalidId));
 
@@ -92,7 +93,7 @@ public class TaskControllerTest {
 
     @Test
     void getAllTasksByUserId_ForExistingUser_ReturnsEntityWithListOfAllUsersTasks() {
-        int userId = 1;
+        long userId = 1;
 
 
         Task task1User1 = new Task(1,userId,"Title1","Description1", ZonedDateTime.now().plusHours(3));
@@ -118,7 +119,7 @@ public class TaskControllerTest {
     }
     @Test
     void getAllTasksByUserId_ForNonExistentUser_ReturnsEntityWithEmptyList() {
-        int userId = 999;
+        long userId = 999;
         when(taskService.getTasksByUserId(userId)).thenReturn(Collections.emptyList());
 
         ResponseEntity<List<Task>> response = taskController.getAllTasksByUserId(userId);
@@ -129,7 +130,7 @@ public class TaskControllerTest {
         verify(taskService,times(1)).getTasksByUserId(userId);
 
     }
-    //to test @Valid need to create integration tests mockMvc?
+    //to test @Valid need to create longegration tests mockMvc?
     @Test
     void createTask_NewTask_CallsService() {
 
@@ -144,22 +145,33 @@ public class TaskControllerTest {
 
     @Test
     void createTask_DuplicateTask_ThrowsTaskAlreadyExistsException() {
-        int duplicateTaskId = 1;
+        long duplicateTaskId = 1;
         Task duplicateTask = new Task(duplicateTaskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
 
         doThrow(new TaskAlreadyExistsException(duplicateTaskId))
                 .when(taskService).createTask(duplicateTask);
-
+        //ResponseEntity<List<Task>> response = taskController.createTask(duplicateTask);
         assertThrows(TaskAlreadyExistsException.class,
                 () -> taskController.createTask(duplicateTask));
         verify(taskService, times(1)).createTask(duplicateTask);//is there really any reason to check that?
     }
+    @Test //actually it is completely useless because its just a copypaste from the previous test
+    void createTask_ForNonExistentUser_ThrowsUserNotFoundException() {
+        long nonExistentUserId = -1;
+        Task impossibleTask = new Task(1,nonExistentUserId,"Title","Description", ZonedDateTime.now().plusHours(3));
 
+        doThrow(new TaskAlreadyExistsException(nonExistentUserId))
+                .when(taskService).createTask(impossibleTask);
 
-    @Test
+        assertThrows(TaskAlreadyExistsException.class,
+                () -> taskController.createTask(impossibleTask));
+        verify(taskService, times(1)).createTask(impossibleTask);//is there really any reason to check that?
+    }
+
+    @Test //so its just a unit test, we actually dont care if it really deletes anything?
     void deleteTask_ForExistingTask_CallsService()
     {
-        int taskId = 1;
+        long taskId = 1;
         Task task = new Task(taskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
 
         doNothing().when(taskService).deleteTaskById(taskId);
@@ -173,7 +185,7 @@ public class TaskControllerTest {
     @Test
     void deleteTask_ForNonExistentTask_CallsService()
     {
-        int nonExistentTaskId = 999;
+        long nonExistentTaskId = 999;
 
         doThrow(new TaskNotFoundException(nonExistentTaskId))
                 .when(taskService).deleteTaskById(nonExistentTaskId);
@@ -186,7 +198,7 @@ public class TaskControllerTest {
 
     @Test
     void handleTaskAlreadyExistsException_ReturnsConflictStatus() {
-        int duplicateTaskId = 1;
+        long duplicateTaskId = 1;
         TaskAlreadyExistsException ex = new TaskAlreadyExistsException( duplicateTaskId );
         ResponseEntity<String> response = taskController.handleTaskAlreadyExistsException(ex);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -194,7 +206,7 @@ public class TaskControllerTest {
 
     @Test
     void handleTaskNotFoundException_ReturnsNotFoundStatus() {
-        int nonExistentTaskId = 1;
+        long nonExistentTaskId = 1;
         TaskNotFoundException ex = new TaskNotFoundException( nonExistentTaskId);
         ResponseEntity<String> response = taskController.handleTaskNotFoundException(ex);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

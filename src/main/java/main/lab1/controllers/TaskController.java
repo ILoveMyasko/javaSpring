@@ -26,12 +26,12 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable("id") int uId){
+    public ResponseEntity<Task> getTaskById(@PathVariable("id") long uId){
         return ResponseEntity.ok(taskService.getTaskById(uId));
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<List<Task>> getAllTasksByUserId(@PathVariable("id") int uId){
+    public ResponseEntity<List<Task>> getAllTasksByUserId(@PathVariable("id") long uId){
         return ResponseEntity.ok(taskService.getTasksByUserId(uId));
     }
 
@@ -41,7 +41,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable("id") int tId){
+    public void deleteTask(@PathVariable("id") long tId){
         taskService.deleteTaskById(tId);
     }
 

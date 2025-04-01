@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") int uId) {
+    public ResponseEntity<User> getUserById(@PathVariable("id") long uId) {
         //this is the best way to do it? using exception UserNotFound
         return ResponseEntity.ok(userService.getUserById(uId));
 
