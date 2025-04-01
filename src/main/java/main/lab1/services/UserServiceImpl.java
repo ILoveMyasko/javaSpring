@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService {
 
     public User createUser(User user) {
         // Проверяем существование пользователя по ID
-        if (userRepository.existsById(user.getId())) {
-            throw new UserAlreadyExistsException(user.getId());
+        if (userRepository.existsById(user.getUserId())) {
+            throw new UserAlreadyExistsException(user.getUserId());
         }
         return userRepository.save(user);
     }

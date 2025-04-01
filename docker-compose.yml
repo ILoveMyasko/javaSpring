@@ -5,7 +5,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/test
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/testdb #name actually doesnt matter
     depends_on:
       - h2-db
 
@@ -14,7 +14,7 @@ services:
     container_name: h2db
     ports:
       - "1521:1521"
-      - "81:81" #<-это обязательно
+      - "81:81" #<-this port is mandatory from what I experienced
     environment:
       H2_OPTIONS: "-ifNotExists"
     volumes:

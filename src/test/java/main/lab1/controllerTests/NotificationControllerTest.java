@@ -63,9 +63,9 @@ public class NotificationControllerTest {
     void getNotificationsByUserId_ForExistingUser_ReturnsEntityWithListOfAllUsersNotifications() {
         int userId = 1;
 
-        Notification notification1User1 = new Notification(1,userId,1,"Notification1");
-        Notification notification2User1 = new Notification(2,userId,2,"Notification2");
-        Notification notification1User2 = new Notification(3,userId+1,3,"Notification3");
+        Notification notification1User1 = new Notification(1,1, 1, "Notification1");
+        Notification notification2User1 = new Notification(2,1, 2, "Notification2");
+        Notification notification1User2 = new Notification(3,2, 3, "Notification3");
         List<Notification> mockNotifications = Arrays.asList(
                 notification1User1,
                 notification2User1,
