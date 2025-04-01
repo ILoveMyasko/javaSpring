@@ -86,6 +86,7 @@ public class NotificationControllerTest {
                 .doesNotContain(notification1User2);
 
         //?
+        
         verify(notificationService, times(1)).getNotificationsByUserId(userId);
     }
     @Test
