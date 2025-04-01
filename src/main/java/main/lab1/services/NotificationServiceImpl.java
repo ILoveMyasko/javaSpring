@@ -22,12 +22,12 @@ public class NotificationServiceImpl implements NotificationService {
         return notifications;
     }
 
-    public List<Notification> getNotificationsByUserId(int userId) {
+    public List<Notification> getNotificationsByUserId(long userId) {
         userService.getUserById(userId);
         return notifications.stream().filter(notif -> notif.getUserId() == userId).toList();
     }
 
-    public List<Notification> getNotificationsByTaskId(int taskId) {
+    public List<Notification> getNotificationsByTaskId(long taskId) {
         taskService.getTaskById(taskId);
         return notifications.stream().filter(notif -> notif.getTaskId() == taskId).toList();
     }

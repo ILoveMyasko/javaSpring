@@ -9,9 +9,9 @@ import java.util.List;
 public interface NotificationService {
     List<Notification> getAllNotifications();
 
-    List<Notification> getNotificationsByUserId(int userId);
+    List<Notification> getNotificationsByUserId(long userId);
 
-    List<Notification> getNotificationsByTaskId(int userId);
+    List<Notification> getNotificationsByTaskId(long userId);
 
     void createNotification(Notification notification);
 }

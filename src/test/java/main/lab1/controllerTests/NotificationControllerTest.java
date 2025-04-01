@@ -30,9 +30,9 @@ public class NotificationControllerTest {
     @Test
     void getAllNotifications_WithMultipleNotifications_ReturnsEntityWithListOfAllNotifications() {
         List<Notification> mockNotifications = Arrays.asList(
-                new Notification(1, 1, "Notification1"),
-                new Notification(1, 2, "Notification2"),
-                new Notification(2, 3, "Notification3")
+                new Notification(1,1, 1, "Notification1"),
+                new Notification(2,1, 2, "Notification2"),
+                new Notification(3,2, 3, "Notification3")
         );
 
         when(notificationService.getAllNotifications()).thenReturn(mockNotifications);
@@ -63,9 +63,9 @@ public class NotificationControllerTest {
     void getNotificationsByUserId_ForExistingUser_ReturnsEntityWithListOfAllUsersNotifications() {
         int userId = 1;
 
-        Notification notification1User1 = new Notification(userId,1,"Notification1");
-        Notification notification2User1 = new Notification(userId,2,"Notification2");
-        Notification notification1User2 = new Notification(userId+1,3,"Notification3");
+        Notification notification1User1 = new Notification(1,1, 1, "Notification1");
+        Notification notification2User1 = new Notification(2,1, 2, "Notification2");
+        Notification notification1User2 = new Notification(3,2, 3, "Notification3");
         List<Notification> mockNotifications = Arrays.asList(
                 notification1User1,
                 notification2User1,
@@ -104,9 +104,9 @@ public class NotificationControllerTest {
     @Test
     void getNotificationsByTaskId_WithExistingTaskId_ReturnsEntityWithListOfTasksNotifications() {
         int taskId = 2;
-        Notification notification1Task1 = new Notification(1,1,"Notification1");
-        Notification notification2Task2 = new Notification(1,2,"Notification2");
-        Notification notification1Task2 = new Notification(2,2,"Notification3");
+        Notification notification1Task1 = new Notification(1,1,1,"Notification1");
+        Notification notification2Task2 = new Notification(2,1,2,"Notification2");
+        Notification notification1Task2 = new Notification(3,2,2,"Notification3");
 
         when(notificationService.getNotificationsByTaskId(taskId)).thenReturn(
                 Arrays.asList(notification1Task2,  notification2Task2)

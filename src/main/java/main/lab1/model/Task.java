@@ -12,8 +12,8 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 public class Task {
 
-    @Positive int id; //primitives cannot be null
-    @Positive int userId;
+    @Positive long id; //primitives cannot be null
+    @Positive long userId;
     @NotEmpty String taskTitle;
     @NotEmpty String taskDescription;
     final ZonedDateTime createdAt = ZonedDateTime.now();
@@ -25,7 +25,7 @@ public class Task {
         return expiresAt == null || expiresAt.isAfter(createdAt);
     }
 
-    public Task(int id, int userId, String taskTitle, String taskDescription, ZonedDateTime expiresAt) {
+    public Task(long id, long userId, String taskTitle, String taskDescription, ZonedDateTime expiresAt) {
         this.id = id;
         this.userId = userId;
         this.taskTitle = taskTitle;

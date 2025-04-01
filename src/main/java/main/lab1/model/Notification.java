@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class Notification {
-    @Positive int userId;
-    @Positive int taskId;
+    @Positive long notificationId;
+    @Positive long userId;
+    @Positive long taskId;
     @NotEmpty String text;
     final LocalDateTime createdAt = LocalDateTime.now();
 }

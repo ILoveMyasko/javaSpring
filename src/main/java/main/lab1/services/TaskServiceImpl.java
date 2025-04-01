@@ -14,11 +14,11 @@ import java.util.Map;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private final Map<Integer, Task> tasks = new HashMap<>();
+    private final Map<Long, Task> tasks = new HashMap<>();
     @Autowired
     private UserService userService;
 
-    public Task getTaskById(int id) {
+    public Task getTaskById(long id) {
         if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         } else return tasks.get(id);
@@ -38,11 +38,11 @@ public class TaskServiceImpl implements TaskService {
         return new ArrayList<>(tasks.values());
     }
 
-    public void deleteTaskById(int id) {
+    public void deleteTaskById(long id) {
         tasks.remove(id);
     }
 
-    public List<Task> getTasksByUserId(int id) {
+    public List<Task> getTasksByUserId(long id) {
         return tasks.values().stream().filter(task -> task.getUserId() == id).toList();
     }
 }
