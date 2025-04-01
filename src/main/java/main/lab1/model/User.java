@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-@Data
-@EqualsAndHashCode
+@Data //not recommended?
 @AllArgsConstructor
 @NoArgsConstructor //mandatory for SpringJPA
 @Entity
