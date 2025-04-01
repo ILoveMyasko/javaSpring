@@ -9,8 +9,6 @@ services:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    networks:
-      - app-network
     depends_on:
       - h2-db
 
@@ -20,11 +18,5 @@ services:
     ports:
       - "9092:9092"
       - "8082:8082"
-    networks:
-      - app-network
     #environment:
     #  - H2_OPTIONS=-tcp -tcpAllowOthers -tcpPort 9092
-
-networks:
-  app-network:
-    driver: bridge

@@ -1,7 +1,6 @@
 # Используем легковесный образ на базе Alpine с JDK 17
 FROM eclipse-temurin:23-jdk-alpine
 # Устанавливаем необходимые пакеты
-RUN apk add --no-cache tzdata
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
