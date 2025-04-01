@@ -27,10 +27,10 @@ public class TaskServiceImpl implements TaskService {
     //how to check whether user exists?
     public void createTask(Task task) {
         userService.getUserById(task.getUserId()); // Дописать
-        if (tasks.containsKey(task.getId())) {
-            throw new TaskAlreadyExistsException(task.getId());
+        if (tasks.containsKey(task.getTaskId())) {
+            throw new TaskAlreadyExistsException(task.getTaskId());
         }
-        tasks.put(task.getId(), task);
+        tasks.put(task.getTaskId(), task);
     }
 
     //but this returns not pointers

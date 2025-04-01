@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 public class Task {
 
-    @Positive long id; //primitives cannot be null
+    @Positive long taskId; //primitives cannot be null
     @Positive long userId;
     @NotEmpty String taskTitle;
     @NotEmpty String taskDescription;
@@ -26,7 +26,7 @@ public class Task {
     }
 
     public Task(long id, long userId, String taskTitle, String taskDescription, ZonedDateTime expiresAt) {
-        this.id = id;
+        this.taskId = id;
         this.userId = userId;
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;

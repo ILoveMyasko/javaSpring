@@ -18,10 +18,10 @@ public class UserServiceImpl implements UserService {
     private final Map<Long, User> users = new HashMap<>(); // can skip <> params since java 7
 
     public void createUser(User user) {
-        if (users.containsKey(user.getId())) {
-            throw new UserAlreadyExistsException(user.getId());
+        if (users.containsKey(user.getUserId())) {
+            throw new UserAlreadyExistsException(user.getUserId());
         }
-        users.put(user.getId(), user);
+        users.put(user.getUserId(), user);
     }
     //streams don't create a copy
     public User getUserById(long id) {

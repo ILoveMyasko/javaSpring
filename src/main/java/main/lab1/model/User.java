@@ -8,7 +8,7 @@ import lombok.*;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class User {
-    private @Positive long id;
+    private @Positive long userId;
     private @NotBlank String name;
     private @Email String email;
 }
