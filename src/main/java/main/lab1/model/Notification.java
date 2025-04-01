@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "notifications")
 public class Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long notificationId;
     int userId;
     @Positive int taskId;
     @NotEmpty String text;
