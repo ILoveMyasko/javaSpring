@@ -30,8 +30,8 @@ public class TaskServiceImpl implements TaskService {
     // since im no longer in control of generating IDs for users, how do I know an id of the user to create a task for him?
     public Task createTask(Task task) {
         userService.getUserById(task.getUserId()); // Дописать
-        if (taskRepository.existsById(task.getId())) {
-            throw new TaskAlreadyExistsException(task.getId());
+        if (taskRepository.existsById(task.getTaskId())) {
+            throw new TaskAlreadyExistsException(task.getTaskId());
         }
         return taskRepository.save(task);
     }

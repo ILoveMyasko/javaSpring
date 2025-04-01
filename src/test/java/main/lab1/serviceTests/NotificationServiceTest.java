@@ -30,7 +30,7 @@ public class NotificationServiceTest {
 
     @Test
     void createNotification_ShouldCreateOneNotification() {
-        Notification notification = new Notification(1,1,"Notification");
+        Notification notification = new Notification(1,1,1,"Notification");
         notificationService.createNotification(notification);
         List<Notification> notifications = notificationService.getAllNotifications();
 
@@ -43,9 +43,9 @@ public class NotificationServiceTest {
     @Test
     void getNotificationByUserId_WithExistingUserId_ShouldReturnListOfUsersNotifications() {
         int userId = 1;
-        Notification notification1User1 = new Notification(userId,1,"Notification1");
-        Notification notification2User1 = new Notification(userId,2,"Notification2");
-        Notification notification1User2 = new Notification(userId+1,3,"Notification3");
+        Notification notification1User1 = new Notification(1,userId,1,"Notification1");
+        Notification notification2User1 = new Notification(2,userId,2,"Notification2");
+        Notification notification1User2 = new Notification(3,userId+1,3,"Notification3");
         notificationService.createNotification(notification1User1);
         notificationService.createNotification(notification2User1);
         notificationService.createNotification(notification1User2);
@@ -60,9 +60,9 @@ public class NotificationServiceTest {
     @Test
     void getNotificationByUserId_WithNonExistentId_ShouldReturnEmptyList() {
         int userId = 1;
-        Notification notification1User1 = new Notification(userId,1,"Notification1");
-        Notification notification2User1 = new Notification(userId,2,"Notification2");
-        Notification notification1User2 = new Notification(userId+1,3,"Notification3");
+        Notification notification1User1 = new Notification(1,userId,1,"Notification1");
+        Notification notification2User1 = new Notification(2,userId,2,"Notification2");
+        Notification notification1User2 = new Notification(3,userId+1,3,"Notification3");
         notificationService.createNotification(notification1User1);
         notificationService.createNotification(notification2User1);
         notificationService.createNotification(notification1User2);
@@ -78,9 +78,9 @@ public class NotificationServiceTest {
     @Test
     void getAllNotifications_WithMultipleNotificationsWithDifferentUserAndTaskIds_ShouldReturnAllNotifications(){
         int userId = 1;
-        Notification notification1User1 = new Notification(userId,1,"Notification1");
-        Notification notification2User1 = new Notification(userId,2,"Notification2");
-        Notification notification1User2 = new Notification(userId+1,3,"Notification3");
+        Notification notification1User1 = new Notification(1,userId,1,"Notification1");
+        Notification notification2User1 = new Notification(2,userId,2,"Notification2");
+        Notification notification1User2 = new Notification(3,userId+1,3,"Notification3");
         notificationService.createNotification(notification1User1);
         notificationService.createNotification(notification2User1);
         notificationService.createNotification(notification1User2);
@@ -96,10 +96,10 @@ public class NotificationServiceTest {
     @Test
     void getNotificationsByTaskId_WithExistingTaskId_ShouldReturnListOfAllTaskNotifications() {
         int taskId = 1;
-        Notification notification1User1Task1 = new Notification(1,taskId,"Notification1");
-        Notification notification2User1Task1 = new Notification(1,taskId,"Notification2");
-        Notification notification1User2Task1 = new Notification(2,taskId,"Notification3");
-        Notification notification1User1Task2 = new Notification(1,taskId+1,"Notification3");
+        Notification notification1User1Task1 = new Notification(1,1,taskId,"Notification1");
+        Notification notification2User1Task1 = new Notification(2,1,taskId,"Notification2");
+        Notification notification1User2Task1 = new Notification(3,2,taskId,"Notification3");
+        Notification notification1User1Task2 = new Notification(4,1,taskId+1,"Notification3");
         notificationService.createNotification(notification1User1Task1);
         notificationService.createNotification(notification2User1Task1);
         notificationService.createNotification(notification1User2Task1);
@@ -116,8 +116,8 @@ public class NotificationServiceTest {
     @Test
     void getNotificationsByTaskId_WithNonExistentTaskId_ShouldReturnEmptyList() {
         int taskId = 1;
-        Notification notification1User1Task1 = new Notification(1,taskId,"Notification1");
-        Notification notification1User1Task2 = new Notification(1,taskId+1,"Notification3");
+        Notification notification1User1Task1 = new Notification(1,1,taskId,"Notification1");
+        Notification notification1User1Task2 = new Notification(2,1,taskId+1,"Notification3");
         notificationService.createNotification(notification1User1Task1);
         notificationService.createNotification(notification1User1Task2);//shouldn't be listed
         List<Notification> userNotifications = notificationService.getNotificationsByTaskId(taskId+2);

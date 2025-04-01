@@ -26,11 +26,11 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getAllNotifications());
     }
     @GetMapping("/users/{id}")
-    public ResponseEntity<List<Notification>> getNotificationsByUserId(@PathVariable("id") int uId){
+    public ResponseEntity<List<Notification>> getNotificationsByUserId(@PathVariable("id") long uId){
         return ResponseEntity.ok(notificationService.getNotificationsByUserId(uId));
     }
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<List<Notification>> getNotificationsByTaskId(@PathVariable("id") int uId){
+    public ResponseEntity<List<Notification>> getNotificationsByTaskId(@PathVariable("id") long uId){
         return ResponseEntity.ok(notificationService.getNotificationsByTaskId(uId));
     }
     //not required but how to create notifs?
