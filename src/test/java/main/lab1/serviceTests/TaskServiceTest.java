@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 //unit tests
 @ExtendWith(MockitoExtension.class)
 public class TaskServiceTest {
-
     @Mock
     private UserService userService;
 
