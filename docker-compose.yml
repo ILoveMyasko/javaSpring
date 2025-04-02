@@ -2,21 +2,26 @@
 services:
   app:
     build: .
+    container_name: app
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/testdb #name actually doesnt matter
+      #jdbc:postgresql://[host]:[port]/[database_name?]
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
-      - h2-db
-  h2-db:
-    image: oscarfonts/h2
-    container_name: h2db
+      - postgres
+  postgres:
+    image: postgres:17
+    container_name: postgres
     ports:
-      - "1521:1521"
-      - "81:81" #<-this port is mandatory from what I experienced
+      - "5432:5432" #<-base postgres port
     environment:
-      H2_OPTIONS: "-ifNotExists"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     volumes:
-      - h2-data:/root
+      - postgres-data:/var/lib/postgresql/data #why?
 volumes:
-  h2-data:
+  postgres-data:
