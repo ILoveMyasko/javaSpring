@@ -38,10 +38,10 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.findByTaskId(taskId);
     }
 
-    public void createNotification(Notification notification) {
-        userService.getUserById(notification.getUserId());
-        taskService.getTaskById(notification.getTaskId());
-        notificationRepository.save(notification);
+    public Notification createNotification(Notification notification) {
+        userService.getUserById(notification.getUserId());//this is so bad
+        taskService.getTaskById(notification.getTaskId());//and this too
+        return notificationRepository.save(notification);
     }
 
 }

@@ -14,7 +14,7 @@ public interface TaskService {
 
     List<Task> getAllTasks();
 
-    void deleteTaskById(long id); // do i return anything?
+    Task deleteTaskById(long id); // do i return anything?
 
     List<Task> getTasksByUserId(long id);
 }

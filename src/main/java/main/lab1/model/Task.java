@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 @Data
@@ -15,7 +16,7 @@ import java.time.ZonedDateTime;
 @Entity
 @NoArgsConstructor //mandatory for SpringJPA
 @Table(name = "tasks")
-public class Task {
+public class Task implements Serializable  { //serializable simple but not the best solution?
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     long taskId;
