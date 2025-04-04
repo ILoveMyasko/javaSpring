@@ -4,10 +4,8 @@ import jakarta.transaction.Transactional;
 import main.lab1.kafkaEvents.TaskEvent;
 import main.lab1.model.Notification;
 import main.lab1.repos.NotificationRepository;
-import main.lab1.repos.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +16,14 @@ public class NotificationServiceImpl implements NotificationService {
 
     final private NotificationRepository notificationRepository;
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    public NotificationServiceImpl(NotificationRepository notificationRepository) {
+    public NotificationServiceImpl(NotificationRepository notificationRepository, TaskService taskService, UserService userService) {
         this.notificationRepository = notificationRepository;
+        this.taskService = taskService;
+        this.userService = userService;
     }
 
 
