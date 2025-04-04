@@ -8,11 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-
 @NoArgsConstructor //mandatory for SpringJPA
 @Entity
-
-
 @Table(name = "notifications")
 public class Notification {
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
