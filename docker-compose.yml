@@ -38,4 +38,4 @@ services:
       - redis-data:/data
 volumes:
   postgres-data:
-  redis-data:
+  redis-data: #maybe actually better not to store data at all. I mean for sure it is

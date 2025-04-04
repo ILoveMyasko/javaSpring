@@ -38,7 +38,7 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.save(task);
     }
 
-    @Cacheable(value = "tasks", key = "#id") //check cache first, if not found put
+    @Cacheable(value = "tasks", key = "#id") //check cache first, if not found put in cache response from db
     public Task getTaskById(long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
