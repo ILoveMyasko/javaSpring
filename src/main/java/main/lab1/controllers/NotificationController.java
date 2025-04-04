@@ -37,10 +37,10 @@ NotificationController {
     }
     //not required but how to create notifs?
     //okay some of them can be created automatically but only some not all.
-    @PostMapping
-    public ResponseEntity<Notification> createNotification(@RequestBody @Valid Notification notification) { //request body builds Notification object through json?
-       return ResponseEntity.ok( notificationService.createNotification(notification));
-    }
+//    @PostMapping
+//    public ResponseEntity<Notification> createNotification(@RequestBody @Valid Notification notification) { //request body builds Notification object through json?
+//       return ResponseEntity.ok( notificationService.createNotification(notification));
+//    }
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException e) {

@@ -1,4 +1,3 @@
-
 services:
   app:
     build: .
@@ -13,9 +12,11 @@ services:
       SPRING_DATA_REDIS_HOST: redis-cache # caching stuff
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_CACHE_REDIS_TIME-TO-LIVE: 60000
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - postgres
       - redis-cache
+      - kafka
 
   postgres:
     image: postgres:17
@@ -36,6 +37,25 @@ services:
       - "6379:6379" #<-base redis port
     volumes:
       - redis-data:/data
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"  # base Kafka port
+    environment:
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092  # Internal DNS
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+    volumes:
+      - kafka-data:/bitnami/kafka
+    depends_on:
+      - postgres  # Optional, only if you want explicit startup order
 volumes:
   postgres-data:
   redis-data: #maybe actually better not to store data at all. I mean for sure it is
+  kafka-data:

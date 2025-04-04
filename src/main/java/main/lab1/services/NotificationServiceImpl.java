@@ -1,8 +1,10 @@
 package main.lab1.services;
 
 import main.lab1.model.Notification;
+import main.lab1.model.Task;
 import main.lab1.repos.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,11 +39,21 @@ public class NotificationServiceImpl implements NotificationService {
         taskService.getTaskById(taskId);
         return notificationRepository.findByTaskId(taskId);
     }
-
-    public Notification createNotification(Notification notification) {
+/* //
+    public Notification createNotification(Notification notification) { //remove after adding kafka?
         userService.getUserById(notification.getUserId());//this is so bad
         taskService.getTaskById(notification.getTaskId());//and this too
         return notificationRepository.save(notification);
     }
 
+ */
+    //now we have this async handler instead of manual task creations
+    @KafkaListener(topics = "task-events")
+    public void handleTaskEvent(Task event) {
+        Notification notification = new Notification(); // deepseek says notificationId will be fine
+        notification.setTaskId(event.getTaskId());
+        notification.setUserId(event.getUserId());
+        notification.setText("Task " + event.getTaskId()+" created");
+        notificationRepository.save(notification);
+    }
 }
