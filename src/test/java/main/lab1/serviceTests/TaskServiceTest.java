@@ -148,33 +148,25 @@ public class TaskServiceTest {
         long taskId = 1;
         Task taskId1User1 = new Task(taskId,userId ,"Title","Description", ZonedDateTime.now().plusHours(3));
         Task taskId2User2 = new Task(taskId+1,userId ,"Title1","Description1", ZonedDateTime.now().plusHours(4));
-
-        doNothing().when(taskRepository).deleteById(taskId);
-        taskService.deleteTaskById(taskId);
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(taskId1User1));
+        Task deletedTask = taskService.deleteTaskById(taskId);
         when(taskRepository.findAll()).thenReturn(List.of(taskId2User2));
         List<Task> tasksWithoutFirstTask = taskService.getAllTasks();
         assertAll(
                 ()->assertEquals(1,tasksWithoutFirstTask.size()),
                 ()->assertFalse(tasksWithoutFirstTask.contains(taskId1User1)),
-                ()->assertTrue(tasksWithoutFirstTask.contains(taskId2User2))
+                ()->assertTrue(tasksWithoutFirstTask.contains(taskId2User2)),
+                ()->assertEquals(deletedTask,taskId1User1)
                 );
     }
 
     @Test
-    void deleteTaskById_WithNonExistentTaskId_ShouldRemoveNothing() {
-        long userId = 1;
-        long taskId = 1;
+    void deleteTaskById_WithNonExistentTaskId_ShouldThrowException() {
         long invalidTaskId = -1;
-        Task taskId1User1 = new Task(taskId,userId,"Title","Description", ZonedDateTime.now().plusHours(3));
-        Task taskId2User2 = new Task(taskId+1,userId,"Title1","Description1", ZonedDateTime.now().plusHours(4));
-        when(taskRepository.findAll()).thenReturn(List.of(taskId1User1,taskId2User2));
-        List<Task> tasks = taskService.getAllTasks();
+        when(taskRepository.findById(invalidTaskId)).thenReturn(Optional.empty());
+        assertThrows(TaskNotFoundException.class,
+                ()->taskService.deleteTaskById(invalidTaskId));
 
-        doNothing().when(taskRepository).deleteById(invalidTaskId);
-        taskService.deleteTaskById(invalidTaskId);
-        List<Task> tasksAfterDeletionOfInvalidTask = taskService.getAllTasks();
-
-        assertThat(tasksAfterDeletionOfInvalidTask).containsExactlyInAnyOrderElementsOf(tasks);
 
     }
 }
