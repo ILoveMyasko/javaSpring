@@ -16,13 +16,18 @@ import java.util.List;
 @Service
 public class TaskServiceImpl implements TaskService {
 
+    //private final Map<Integer, Task> tasks = new HashMap<>();
     final private TaskRepository taskRepository;
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
+        this.userService = userService;
+    }
+
+    public Task getTaskById(long id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     // since im no longer in control of generating IDs for users, how do I know an id of the user to create a task for him?
