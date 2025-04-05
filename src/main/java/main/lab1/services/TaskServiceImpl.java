@@ -14,11 +14,11 @@ public class TaskServiceImpl implements TaskService {
 
     //private final Map<Integer, Task> tasks = new HashMap<>();
     final private TaskRepository taskRepository;
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
+        this.userService = userService;
     }
 
     public Task getTaskById(long id) {
