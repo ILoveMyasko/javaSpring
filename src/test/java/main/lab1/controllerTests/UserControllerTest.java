@@ -100,7 +100,7 @@ public class UserControllerTest {
     void createUser_NewUser_CallsService() {
 
         User newUser = new User(1, "John", "brutalkin_V@mail.ru");
-        doNothing().when(userService).createUser(newUser);
+        when(userService.createUser(newUser)).thenReturn(newUser);
 
         assertDoesNotThrow(() -> userController.createUser(newUser));
         verify(userService, times(1)).createUser(newUser);
