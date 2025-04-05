@@ -25,10 +25,6 @@ public class TaskServiceImpl implements TaskService {
         this.userService = userService;
     }
 
-    public Task getTaskById(long id) {
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException(id));
-    }
 
     // since im no longer in control of generating IDs for users, how do I know an id of the user to create a task for him?
     @Caching(
