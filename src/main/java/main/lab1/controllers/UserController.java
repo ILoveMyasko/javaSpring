@@ -39,7 +39,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody @Valid User user) { //request body build User object through json?
-       return ResponseEntity.ok(userService.createUser(user));
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)

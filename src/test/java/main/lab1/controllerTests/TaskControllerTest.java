@@ -136,8 +136,8 @@ public class TaskControllerTest {
     void createTask_NewTask_CallsService() {
 
         Task newTask = new Task(1,1,"Title","Description", ZonedDateTime.now().plusHours(3));
-        doNothing().when(taskService).createTask(newTask);
-
+        //doNothing().when(taskService).createTask(newTask);
+        when(taskService.createTask(newTask)).thenReturn(newTask);
         assertDoesNotThrow(
                 () -> taskController.createTask(newTask)
         );
@@ -175,8 +175,8 @@ public class TaskControllerTest {
         long taskId = 1;
         Task task = new Task(taskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
 
-        doNothing().when(taskService).deleteTaskById(taskId);
-
+       // doNothing().when(taskService).deleteTaskById(taskId);
+        when(taskService.deleteTaskById(taskId)).thenReturn(task);
         assertDoesNotThrow(
                 ()->taskController.deleteTask(taskId)
         );
