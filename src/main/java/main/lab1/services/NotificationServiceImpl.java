@@ -42,13 +42,13 @@ public class NotificationServiceImpl implements NotificationService {
         taskService.getTaskById(taskId);
         return notificationRepository.findByTaskId(taskId);
     }
-/* //
+//
     public Notification createNotification(Notification notification) { //remove after adding kafka?
         userService.getUserById(notification.getUserId());//this is so bad
         taskService.getTaskById(notification.getTaskId());//and this too
         return notificationRepository.save(notification);
     }
- */
+
     //now we have this async handler instead of manual task creations
     @KafkaListener(topics = "task-events")
     @Transactional //get errors without it
