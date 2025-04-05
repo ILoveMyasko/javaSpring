@@ -15,14 +15,14 @@ public class NotificationServiceImpl implements NotificationService {
 
     final private NotificationRepository notificationRepository;
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    public NotificationServiceImpl(NotificationRepository notificationRepository) {
+    public NotificationServiceImpl(NotificationRepository notificationRepository, TaskService taskService, UserService userService) {
         this.notificationRepository = notificationRepository;
+        this.taskService = taskService;
+        this.userService = userService;
     }
 
 
@@ -41,8 +41,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 /* //
     public Notification createNotification(Notification notification) { //remove after adding kafka?
-        userService.getUserById(notification.getUserId());//this is so bad
-        taskService.getTaskById(notification.getTaskId());//and this too
+        userService.getUserById(notification.getUserId());
+        taskService.getTaskById(notification.getTaskId());
         return notificationRepository.save(notification);
     }
 

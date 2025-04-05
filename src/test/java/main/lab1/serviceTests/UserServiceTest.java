@@ -27,31 +27,29 @@ public class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-//    @BeforeEach
-//    void setUp() {
-//        userService = new UserServiceImpl();
-//    }
 
     @Test
     void createUser_WithNewId_ShouldAddUser() {
-        long userId = 1;
-        User user = new User(userId, "Alex", "alex@ex.com");
+        long newUserId = 1;
+        User user = new User(newUserId, "Alex", "alex@ex.com");
 
 
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userRepository.findById(newUserId)).thenReturn(Optional.empty());
+        when(userRepository.existsById(newUserId)).thenReturn(false);
         when(userRepository.save(user)).thenReturn(user);
         when(userRepository.findAll())
-                .thenReturn(List.of()); // After creation
+                .thenReturn(List.of()); // before creation
         long initialUserCount = userRepository.count();
+
         userService.createUser(user);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(newUserId)).thenReturn(Optional.of(user));
         when(userRepository.findAll())
                 .thenReturn(List.of(user));
 
 
-        assertDoesNotThrow(() -> userService.getUserById(userId));
-        assertEquals(user, userService.getUserById(userId));
+        assertDoesNotThrow(() -> userService.getUserById(newUserId));
+        assertEquals(user, userService.getUserById(newUserId));
         assertEquals(initialUserCount+1, userService.getAllUsers().size());
     }
 
