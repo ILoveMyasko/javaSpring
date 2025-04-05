@@ -46,10 +46,9 @@ public class TaskServiceTest {
         Task newTask = new Task(taskId,userId,"Title","Description", ZonedDateTime.now().plusHours(1));
         when(taskRepository.count()).thenReturn(0L);
         long tasksCount = taskRepository.count();//0
-
+        when(taskRepository.save(newTask)).thenReturn(newTask);
         when(userService.getUserById(userId)).thenReturn(mockUser);
         when(taskRepository.existsById(taskId)).thenReturn(false);
-        //doNothing().when(kafkaTemplate).send("task-events",newTask);
         assertDoesNotThrow(() -> taskService.createTask(newTask));
         taskService.createTask(newTask);
         when(taskRepository.count()).thenReturn(1L);
