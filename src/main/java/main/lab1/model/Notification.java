@@ -17,8 +17,8 @@ import java.time.LocalDateTime;
 public class Notification {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     long notificationId;
-    int userId;
-    @Positive int taskId;
+    long userId;
+    @Positive long taskId;
     @NotEmpty String text;
     final LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -13,5 +13,5 @@ public interface NotificationService {
 
     List<Notification> getNotificationsByTaskId(long userId);
 
-    void createNotification(Notification notification);
+    Notification createNotification(Notification notification);
 }

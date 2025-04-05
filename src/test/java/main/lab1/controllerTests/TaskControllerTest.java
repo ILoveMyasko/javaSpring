@@ -135,8 +135,8 @@ public class TaskControllerTest {
     void createTask_NewTask_CallsService() {
 
         Task newTask = new Task(1,1,"Title","Description", ZonedDateTime.now().plusHours(3));
-        doNothing().when(taskService).createTask(newTask);
-
+        //doNothing().when(taskService).createTask(newTask);
+        when(taskService.createTask(newTask)).thenReturn(newTask);
         assertDoesNotThrow(
                 () -> taskController.createTask(newTask)
         );
