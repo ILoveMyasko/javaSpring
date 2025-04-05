@@ -14,10 +14,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 //unit tests
@@ -28,6 +31,9 @@ public class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -43,7 +49,7 @@ public class TaskServiceTest {
 
         when(userService.getUserById(userId)).thenReturn(mockUser);
         when(taskRepository.existsById(taskId)).thenReturn(false);
-
+        //doNothing().when(kafkaTemplate).send("task-events",newTask);
         assertDoesNotThrow(() -> taskService.createTask(newTask));
         taskService.createTask(newTask);
         when(taskRepository.count()).thenReturn(1L);
