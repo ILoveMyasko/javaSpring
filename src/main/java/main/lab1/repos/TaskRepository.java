@@ -11,7 +11,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> findByUserId(Long userId);
 
-    @Query("SELECT t FROM Task t WHERE t.expiresAt < :now AND t.isCompleted = false")
+    @Query("SELECT t FROM Task t WHERE t.expiresAt < :now AND t.isCompleted = false") //sql injection impenetrable
     List<Task> findByDueDateBeforeAndCompletedFalse(@Param("now") ZonedDateTime now);
 
 }

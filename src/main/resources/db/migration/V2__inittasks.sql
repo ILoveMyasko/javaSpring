@@ -4,7 +4,7 @@ CREATE TABLE tasks (
                        task_title VARCHAR(100) NOT NULL,
                        task_description VARCHAR(255) NOT NULL,
                        created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-                       expires_at TIMESTAMP WITH TIME ZONE,
+                       expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
                        is_completed BOOLEAN NOT NULL
 
 );
