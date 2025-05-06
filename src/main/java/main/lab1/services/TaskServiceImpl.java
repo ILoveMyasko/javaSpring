@@ -1,5 +1,6 @@
 package main.lab1.services;
 
+import jakarta.transaction.Transactional;
 import main.lab1.kafkaEvents.TaskEvent;
 import main.lab1.kafkaEvents.TaskEventTypeEnum;
 import main.lab1.model.Task;
@@ -40,6 +41,7 @@ public class TaskServiceImpl implements TaskService {
             put = @CachePut(value = "tasks", key = "#result.taskId"),
             evict = @CacheEvict(value = "userTasks", key = "#task.userId") //force cache clear to avoid outdated data retrieval
     ) //no evict can cause us to get just this one added task if all other were deleted by timeout (outdating).
+    @Transactional
     public Task createTask(Task task) {
         userService.getUserById(task.getUserId()); // kinda like a check for existence, throws if not found
         if (taskRepository.existsById(task.getTaskId())) {
@@ -84,6 +86,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Async
     @Scheduled(initialDelay = 30000, fixedDelay = 60000) //starting from 30th sec each 60
+    @Transactional
     void deleteOverdueTasks() {
         List<Task> overdueTasks = taskRepository.findByDueDateBeforeAndCompletedFalse(ZonedDateTime.now());
         if (!overdueTasks.isEmpty()) {
