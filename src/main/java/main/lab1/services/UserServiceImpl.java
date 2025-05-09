@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    //static?
     private final Map<Integer, User> users = new HashMap<Integer, User>(); // can skip <> params since java 7
 
     public void createUser(User user) {
@@ -23,7 +22,7 @@ public class UserServiceImpl implements UserService {
         }
         users.put(user.getId(), user);
     }
-    //streams still doesnt create a copy
+
     public User getUserById(int id) {
         if (!users.containsKey(id)) {
             throw new UserNotFoundException(id);

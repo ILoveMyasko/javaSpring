@@ -14,7 +14,6 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    //@Autowired // not necessary if 1 constructor since spring version 3.3+?
     private final UserService userService; //dependency injection from solid
 
     UserController(UserService userService) {
@@ -28,7 +27,6 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") int uId) {
-        //this is the best way to do it? using exception UserNotFound
         return ResponseEntity.ok(userService.getUserById(uId));
 
 //        //functional way:
