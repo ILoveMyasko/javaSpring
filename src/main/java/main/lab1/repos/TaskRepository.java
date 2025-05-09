@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task,Long> {
     List<Task> findByUserId(Long userId); //find all would've been better but this works too
+
 }

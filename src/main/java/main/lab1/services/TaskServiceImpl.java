@@ -9,6 +9,7 @@ import main.lab1.repos.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -45,10 +46,19 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public void deleteTaskById(long id) {
-        Task task = taskRepository.deleteById(id);
-        if (task!=null) {
-            notificationService.createNotification(new Notification(task.getUserId(), task.getTaskId(), "Task deleted!"));
+        Optional<Task> taskOptional = taskRepository.findById(id);
+        if (taskOptional.isPresent()) {
+            Task taskToDelete = taskOptional.get();
+            long userId = taskToDelete.getUserId(); // Сохраняем данные до удаления
+            long taskId = taskToDelete.getTaskId();
+
+            // 2. Если нашли, удаляем ее
+            taskRepository.deleteById(id); // или taskRepository.delete(taskToDelete);
+
+            // 3. Отправляем уведомление
+            notificationService.createNotification(new Notification(userId, taskId, "Task deleted!"));
         }
+        else throw new TaskNotFoundException(id);
     }
 
     public List<Task> getTasksByUserId(long id) {
