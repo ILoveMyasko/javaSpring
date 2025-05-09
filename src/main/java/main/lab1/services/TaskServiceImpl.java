@@ -1,8 +1,10 @@
 package main.lab1.services;
 
 import main.lab1.model.Task;
+import main.lab1.model.Notification;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
+import main.lab1.model.User;
 import main.lab1.repos.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,11 @@ public class TaskServiceImpl implements TaskService {
     //private final Map<Integer, Task> tasks = new HashMap<>();
     final private TaskRepository taskRepository;
     private final UserService userService;
-
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService) {
+    private final NotificationService notificationService;
+    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     public Task getTaskById(long id) {
@@ -32,7 +35,9 @@ public class TaskServiceImpl implements TaskService {
         if (taskRepository.existsById(task.getTaskId())) {
             throw new TaskAlreadyExistsException(task.getTaskId());
         }
+        notificationService.createNotification(new Notification(task.getUserId(),task.getTaskId(), "Task created!"));
         return taskRepository.save(task);
+
     }
 
     public List<Task> getAllTasks() {
@@ -40,7 +45,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public void deleteTaskById(long id) {
-        taskRepository.deleteById(id);//ignored if not found. throw is definitely not a good idea
+        Task task = taskRepository.deleteById(id);
+        if (task!=null) {
+            notificationService.createNotification(new Notification(task.getUserId(), task.getTaskId(), "Task deleted!"));
+        }
     }
 
     public List<Task> getTasksByUserId(long id) {

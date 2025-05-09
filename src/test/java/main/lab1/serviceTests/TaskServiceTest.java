@@ -6,6 +6,7 @@ import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.model.User;
 import main.lab1.repos.TaskRepository;
+import main.lab1.services.NotificationService;
 import main.lab1.services.TaskServiceImpl;
 import main.lab1.services.UserService;
 
@@ -31,6 +32,9 @@ public class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private TaskServiceImpl taskService;
