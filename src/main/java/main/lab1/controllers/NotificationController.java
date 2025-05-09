@@ -33,12 +33,6 @@ public class NotificationController {
     public ResponseEntity<List<Notification>> getNotificationsByTaskId(@PathVariable("id") long uId){
         return ResponseEntity.ok(notificationService.getNotificationsByTaskId(uId));
     }
-    //not required but how to create notifs?
-    //okay some of them can be created automatically but only some not all.
-    @PostMapping
-    public void createNotification(@RequestBody @Valid Notification notification) { //request body builds Notification object through json?
-        notificationService.createNotification(notification);
-    }
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException e) {
@@ -49,4 +43,5 @@ public class NotificationController {
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
 }

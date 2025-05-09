@@ -1,6 +1,7 @@
 package main.lab1.services;
 
 import main.lab1.model.Task;
+import main.lab1.model.Notification;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +18,34 @@ public class TaskServiceImpl implements TaskService {
     private final Map<Long, Task> tasks = new HashMap<>();
     @Autowired
     private UserService userService;
+    NotificationService notificationService;
+    public TaskServiceImpl(NotificationService notificationService)
+    {
+        this.notificationService = notificationService;
+    }
 
-    public Task getTaskById(long id) {
+    public Task getTaskById(int id) {
         if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         } else return tasks.get(id);
     }
 
-    //how to check whether user exists?
     public void createTask(Task task) {
         userService.getUserById(task.getUserId()); // Дописать
         if (tasks.containsKey(task.getTaskId())) {
             throw new TaskAlreadyExistsException(task.getTaskId());
         }
         tasks.put(task.getTaskId(), task);
+        notificationService.createNotification(new Notification(task.getUserId(),task.getTaskId(), "Task created!"));
     }
 
-    //but this returns not pointers
     public List<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
     }
 
-    public void deleteTaskById(long id) {
-        tasks.remove(id);
+    public void deleteTaskById(int id) {
+        Task task = tasks.remove(id);
+        notificationService.createNotification(new Notification(task.getUserId(),task.getTaskId(),"Task deleted!"));
     }
 
     public List<Task> getTasksByUserId(long id) {
