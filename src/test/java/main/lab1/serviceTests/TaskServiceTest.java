@@ -5,6 +5,7 @@ import main.lab1.model.Task;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.model.User;
+import main.lab1.services.NotificationService;
 import main.lab1.services.TaskServiceImpl;
 import main.lab1.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 //unit tests
@@ -25,6 +27,9 @@ import static org.mockito.Mockito.when;
 public class TaskServiceTest {
     @Mock
     private UserService userService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -59,6 +64,7 @@ public class TaskServiceTest {
         when(userService.getUserById(userId)).thenReturn(mockUser);//is it okay to use getUserById to check for existnece? not bool function
         Task task1 = new Task(taskId,userId,"Title","Description", ZonedDateTime.now().plusHours(3));
         Task task2 = new Task(taskId,userId,"Title","Description", ZonedDateTime.now().plusHours(3));
+
         taskService.createTask(task1);
         assertThrows(
                 TaskAlreadyExistsException.class,
@@ -128,6 +134,7 @@ public class TaskServiceTest {
         Task task1User1 = new Task(1,userId,"Title","Description", ZonedDateTime.now().plusHours(3));
         Task task2User1 = new Task(2,userId,"Title1","Description1", ZonedDateTime.now().plusHours(4));
         Task task1User2 = new Task(3,userId+1,"Title2","Description2", ZonedDateTime.now().plusHours(4));
+
         taskService.createTask(task1User1);
         taskService.createTask(task1User2);//another user have tasks
         taskService.createTask(task2User1);
