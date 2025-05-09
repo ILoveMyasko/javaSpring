@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
         users.put(user.getUserId(), user);
     }
 
-    public User getUserById(int id) {
+    public User getUserById(long id) {
         if (!users.containsKey(id)) {
             throw new UserNotFoundException(id);
         } else return users.get(id);

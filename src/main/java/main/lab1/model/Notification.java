@@ -15,4 +15,9 @@ public class Notification {
     @Positive long taskId;
     @NotEmpty String text;
     final LocalDateTime createdAt = LocalDateTime.now();
+    public Notification(long userId, long taskId, String message) {
+        this.userId = userId;
+        this.taskId = taskId;
+        this.text = message;
+    }
 }

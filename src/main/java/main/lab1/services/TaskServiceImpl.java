@@ -4,6 +4,7 @@ import main.lab1.model.Task;
 import main.lab1.model.Notification;
 import main.lab1.exceptions.TaskAlreadyExistsException;
 import main.lab1.exceptions.TaskNotFoundException;
+import main.lab1.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +17,16 @@ import java.util.Map;
 public class TaskServiceImpl implements TaskService {
 
     private final Map<Long, Task> tasks = new HashMap<>();
-    @Autowired
-    private UserService userService;
-    NotificationService notificationService;
-    public TaskServiceImpl(NotificationService notificationService)
+    private final UserService userService;
+    private final NotificationService notificationService;
+
+    public TaskServiceImpl(NotificationService notificationService, UserService userService)
     {
+        this.userService = userService;
         this.notificationService = notificationService;
     }
 
-    public Task getTaskById(int id) {
+    public Task getTaskById(long id) {
         if (!tasks.containsKey(id)) {
             throw new TaskNotFoundException(id);
         } else return tasks.get(id);
@@ -43,9 +45,11 @@ public class TaskServiceImpl implements TaskService {
         return new ArrayList<>(tasks.values());
     }
 
-    public void deleteTaskById(int id) {
+    public void deleteTaskById(long id) {
         Task task = tasks.remove(id);
-        notificationService.createNotification(new Notification(task.getUserId(),task.getTaskId(),"Task deleted!"));
+        if (task!=null) {
+            notificationService.createNotification(new Notification(task.getUserId(), task.getTaskId(), "Task deleted!"));
+        }
     }
 
     public List<Task> getTasksByUserId(long id) {
