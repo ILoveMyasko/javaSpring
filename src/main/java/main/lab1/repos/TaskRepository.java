@@ -3,10 +3,12 @@ package main.lab1.repos;
 
 
 import main.lab1.model.Task;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface TaskRepository {
 
     boolean existsById (long id);
