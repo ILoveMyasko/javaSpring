@@ -4,9 +4,8 @@ import main.lab1.model.Task;
 import main.lab1.model.Notification;
 import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.TaskNotFoundException;
-import main.lab1.model.User;
 import main.lab1.repos.TaskRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
