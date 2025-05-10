@@ -36,8 +36,9 @@ public class TaskServiceImpl implements TaskService {
         if (taskRepository.existsById(newTask.getTaskId())) {
             throw new DuplicateResourceException("Task with id " + newTask.getTaskId() + " already exists");
         }
-        notificationService.createNotification(new Notification(newTask.getUserId(),newTask.getTaskId(), "Task created!"));
-        return taskRepository.save(newTask);
+        Task savedTask =  taskRepository.save(newTask);
+        notificationService.createNotification(new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
+        return savedTask;
 
     }
 
@@ -49,13 +50,11 @@ public class TaskServiceImpl implements TaskService {
         Optional<Task> taskOptional = taskRepository.findById(id);
         if (taskOptional.isPresent()) {
             Task taskToDelete = taskOptional.get();
-            long userId = taskToDelete.getUserId(); // Сохраняем данные до удаления
+            long userId = taskToDelete.getUserId();
             long taskId = taskToDelete.getTaskId();
 
-            // 2. Если нашли, удаляем ее
-            taskRepository.deleteById(id); // или taskRepository.delete(taskToDelete);
+            taskRepository.deleteById(id);
 
-            // 3. Отправляем уведомление
             notificationService.createNotification(new Notification(userId, taskId, "Task deleted!"));
         }
         else throw new TaskNotFoundException(id);
