@@ -2,7 +2,7 @@ package main.lab1.services;
 
 import main.lab1.model.Task;
 import main.lab1.model.Notification;
-import main.lab1.exceptions.TaskAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.model.User;
 import main.lab1.repos.TaskRepository;
@@ -31,13 +31,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     // since im no longer in control of generating IDs for users, how do I know an id of the user to create a task for him?
-    public Task createTask(Task task) {
-        userService.getUserById(task.getUserId()); // Дописать
-        if (taskRepository.existsById(task.getTaskId())) {
-            throw new TaskAlreadyExistsException(task.getTaskId());
+    public Task createTask(Task newTask) {
+        userService.getUserById(newTask.getUserId()); // Дописать
+        if (taskRepository.existsById(newTask.getTaskId())) {
+            throw new DuplicateResourceException("Task with id " + newTask.getTaskId() + " already exists");
         }
-        notificationService.createNotification(new Notification(task.getUserId(),task.getTaskId(), "Task created!"));
-        return taskRepository.save(task);
+        notificationService.createNotification(new Notification(newTask.getUserId(),newTask.getTaskId(), "Task created!"));
+        return taskRepository.save(newTask);
 
     }
 
