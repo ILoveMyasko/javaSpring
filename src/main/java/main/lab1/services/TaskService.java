@@ -10,7 +10,7 @@ public interface TaskService {
 
     Task getTaskById(long id);
 
-    void createTask(Task task);
+    Task createTask(Task task);
 
     List<Task> getAllTasks();
 

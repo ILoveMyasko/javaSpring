@@ -2,7 +2,7 @@ package main.lab1.services;
 
 import main.lab1.model.Task;
 import main.lab1.model.Notification;
-import main.lab1.exceptions.TaskAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserService userService;
     private final NotificationService notificationService;
 
-    public TaskServiceImpl(NotificationService notificationService, UserService userService)
-    {
+    public TaskServiceImpl(NotificationService notificationService, UserService userService) {
         this.userService = userService;
         this.notificationService = notificationService;
     }
@@ -32,13 +31,14 @@ public class TaskServiceImpl implements TaskService {
         } else return tasks.get(id);
     }
 
-    public void createTask(Task task) {
-        userService.getUserById(task.getUserId()); // Дописать
-        if (tasks.containsKey(task.getTaskId())) {
-            throw new TaskAlreadyExistsException(task.getTaskId());
+    public Task createTask(Task newTask) {
+        userService.getUserById(newTask.getUserId()); // Дописать
+        if (tasks.containsKey(newTask.getTaskId())) {
+            throw new DuplicateResourceException("Task with id " + newTask.getTaskId() + " already exists");
         }
-        tasks.put(task.getTaskId(), task);
-        notificationService.createNotification(new Notification(task.getUserId(),task.getTaskId(), "Task created!"));
+        tasks.put(newTask.getTaskId(), newTask);
+        notificationService.createNotification(new Notification(newTask.getUserId(), newTask.getTaskId(), "Task created!"));
+        return newTask;
     }
 
     public List<Task> getAllTasks() {
