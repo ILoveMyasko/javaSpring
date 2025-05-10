@@ -2,7 +2,7 @@ package main.lab1.controllers;
 
 import jakarta.validation.Valid;
 import main.lab1.entities.User;
-import main.lab1.exceptions.UserAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService; //dependency injection from solid
+    private final UserService userService;
 
     UserController(UserService userService) {
         this.userService = userService;
@@ -29,19 +29,15 @@ public class UserController {
     public ResponseEntity<User> getUserById(@PathVariable("id") int uId) {
         return ResponseEntity.ok(userService.getUserById(uId));
 
-//        //functional way:
-//         return userService.getUserById(uId)
-//        .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
-//        .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public void createUser(@RequestBody @Valid User user) { //request body build User object through json?
-        userService.createUser(user);
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<String> handleDuplicateResourceException(DuplicateResourceException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 

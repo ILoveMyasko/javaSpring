@@ -1,7 +1,7 @@
 package main.lab1.controllers;
 import jakarta.validation.Valid;
 import main.lab1.entities.Task;
-import main.lab1.exceptions.TaskAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskService;
 import org.springframework.http.HttpStatus;
@@ -35,8 +35,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public void createTask(@RequestBody @Valid Task Task) { //request body builds Task object through json?
-        taskService.createTask(Task);
+    public ResponseEntity<Task> createTask(@RequestBody @Valid Task Task) { //request body builds Task object through json?
+        return ResponseEntity.ok(taskService.createTask(Task));
     }
 
     @DeleteMapping("/{id}")
@@ -45,8 +45,8 @@ public class TaskController {
     }
 
 
-    @ExceptionHandler(TaskAlreadyExistsException.class)
-    public ResponseEntity<String> handleTaskAlreadyExistsException(TaskAlreadyExistsException e) {
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<String> handleDuplicateResourceException(DuplicateResourceException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
