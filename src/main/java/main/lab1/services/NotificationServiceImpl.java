@@ -13,14 +13,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     final private NotificationRepository notificationRepository;
 
-    private final TaskService taskService;
-
-    private final UserService userService;
-
-    public NotificationServiceImpl(NotificationRepository notificationRepository, TaskService taskService, UserService userService) {
+    public NotificationServiceImpl(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
-        this.taskService = taskService;
-        this.userService = userService;
     }
 
 
