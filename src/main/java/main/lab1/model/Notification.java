@@ -1,18 +1,25 @@
 package main.lab1.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
+import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor //mandatory for SpringJPA
 @AllArgsConstructor
+@Entity
+@Table(name = "notifications")
 public class Notification {
-    @Positive long notificationId;
-    @Positive long userId;
-    @Positive long taskId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long notificationId;
+    @Positive @NotNull
+    long userId;
+    @Positive @NotNull
+    long taskId;
     @NotEmpty String text;
     final LocalDateTime createdAt = LocalDateTime.now();
     public Notification(long userId, long taskId, String message) {

@@ -1,9 +1,9 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.UserController;
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.User;
 import main.lab1.exceptions.DuplicateResourceException;
-import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,24 +83,18 @@ public class UserControllerTest {
     void getUserById_WithNonExistentId_ThrowsUserNotFoundException() {
         int invalidId = 999;
         when(userService.getUserById(invalidId))
-                .thenThrow(new UserNotFoundException(invalidId));
+                .thenThrow(new ResourceNotFoundException("User with id" + invalidId + " not found"));
 
-        assertThrows(UserNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 () -> userController.getUserById(invalidId));
-        // we cant check the http code because we don't actually create Spring MVC?
-        /*
-        UserNotFoundException ex = new UserNotFoundException("User not found");
-        ResponseEntity<String> response = userController.handleUserNotFoundException(ex); //here not exception but userid
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not found", response.getBody());
-         */
+
     }
     //to test @Valid need to create integration tests mockMvc?
     @Test
     void createUser_NewUser_CallsService() {
 
         User newUser = new User(1, "John", "brutalkin_V@mail.ru");
-        //doNothing().when(userService).createUser(newUser);
+        when(userService.createUser(newUser)).thenReturn(newUser);
 
         assertDoesNotThrow(() -> userController.createUser(newUser));
         verify(userService, times(1)).createUser(newUser);
@@ -131,8 +125,8 @@ public class UserControllerTest {
     @Test
     void handleUserNotFoundException_ReturnsNotFoundStatus() {
         int nonExistentUserId = 1;
-        UserNotFoundException ex = new UserNotFoundException( nonExistentUserId);
-        ResponseEntity<String> response = userController.handleUserNotFoundException(ex);
+        ResourceNotFoundException ex = new ResourceNotFoundException("User with id" + nonExistentUserId + " not found");
+        ResponseEntity<String> response = userController.handleResourceNotFoundException(ex);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

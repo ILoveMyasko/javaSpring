@@ -1,11 +1,10 @@
 package main.lab1.serviceTests;
-
-import main.lab1.controllers.NotificationController;
 import main.lab1.model.Notification;
-
-import main.lab1.services.NotificationServiceImpl;
+import main.lab1.repos.NotificationRepository;
+import main.lab1.services.implementation.NotificationServiceImpl;
 import main.lab1.services.TaskService;
 import main.lab1.services.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,114 +14,119 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 //unit tests
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
 
     @Mock
-    private UserService userService;
-
-    @Mock
-    private TaskService taskService;
+    private NotificationRepository notificationRepository;
 
     @InjectMocks
     private NotificationServiceImpl notificationService;
 
+    private Notification notificationToSave;
+    private Notification notificationUser1Task1;
+    private Notification notificationUser1Task2;
+    private Notification notificationUser2Task1;
+
+
+    @BeforeEach
+    void setUp() {
+        notificationToSave = new Notification(1,1,1,"Just Notification");
+        notificationUser1Task1 = new Notification(1,1,1,"Notification User1Task1");
+        notificationUser1Task2 = new Notification(2,1,2,"Notification User1Task2");
+        notificationUser2Task1 = new Notification(3,2,1,"Notification User2Task1");
+    }
+
     @Test
     void createNotification_ShouldCreateOneNotification() {
-        Notification notification = new Notification(1,1,1,"Notification");
-        notificationService.createNotification(notification);
-        List<Notification> notifications = notificationService.getAllNotifications();
+        when(notificationRepository.findAll()).thenReturn(List.of());
+        List<Notification> allNotificationsBeforeAddingOne = notificationService.getAllNotifications();
 
+        when(notificationRepository.save(notificationToSave)).thenReturn(notificationToSave);
+        Notification createdNotification = notificationService.createNotification(notificationToSave);
+
+        when(notificationRepository.findAll()).thenReturn(List.of(notificationToSave));
+
+        List<Notification> notificationsAfterAddingOne = notificationService.getAllNotifications();
         assertAll(
-                ()->assertEquals(1,notifications.size()),
-                ()->assertTrue(notifications.contains(notification))
+                ()->assertEquals(0, allNotificationsBeforeAddingOne.size()),
+                ()->assertEquals(1, notificationsAfterAddingOne.size()),
+                ()->assertEquals(notificationToSave,createdNotification),
+                ()->assertTrue(notificationsAfterAddingOne.contains(notificationToSave))
         );
+        verify(notificationRepository).save(notificationToSave);
     }
 
     @Test
     void getNotificationByUserId_WithExistingUserId_ShouldReturnListOfUsersNotifications() {
-        int userId = 1;
-        Notification notification1User1 = new Notification(1,userId,1,"Notification1");
-        Notification notification2User1 = new Notification(2,userId,2,"Notification2");
-        Notification notification1User2 = new Notification(3,userId+1,3,"Notification3");
-        notificationService.createNotification(notification1User1);
-        notificationService.createNotification(notification2User1);
-        notificationService.createNotification(notification1User2);
-        List<Notification> userNotifications = notificationService.getNotificationsByUserId(userId);
+
+        when(notificationRepository.findByUserId(1L)).thenReturn(List.of(notificationUser1Task1,notificationUser1Task2));
+
+        List<Notification> userNotifications = notificationService.getNotificationsByUserId(1L);
+
         assertAll(
                 ()->assertEquals(2,userNotifications.size()),
-                ()->assertTrue(userNotifications.contains(notification1User1)),
-                ()->assertTrue(userNotifications.contains(notification2User1))
+                ()->assertTrue(userNotifications.contains(notificationUser1Task1)),
+                ()->assertTrue(userNotifications.contains(notificationUser1Task2))
         );
-
+        verify(notificationRepository).findByUserId(1);
     }
     @Test
     void getNotificationByUserId_WithNonExistentId_ShouldReturnEmptyList() {
-        int userId = 1;
-        Notification notification1User1 = new Notification(1,userId,1,"Notification1");
-        Notification notification2User1 = new Notification(2,userId,2,"Notification2");
-        Notification notification1User2 = new Notification(3,userId+1,3,"Notification3");
-        notificationService.createNotification(notification1User1);
-        notificationService.createNotification(notification2User1);
-        notificationService.createNotification(notification1User2);
-        List<Notification> userNotifications = notificationService.getNotificationsByUserId(userId+2);
-        assertEquals(0,userNotifications.size());
+        when(notificationRepository.findByUserId(0L)).thenReturn(List.of());
+
+        List<Notification> userNotifications = notificationService.getNotificationsByUserId(0L);
+        assertTrue(userNotifications.isEmpty());
+        verify(notificationRepository).findByUserId(0L);
     }
 
     @Test
     void getAllNotifications_WithNoNotifications_ShouldReturnEmptyList(){
-        List<Notification> userNotifications = notificationService.getAllNotifications();
-        assertTrue(userNotifications.isEmpty());
+        when(notificationRepository.findAll()).thenReturn(List.of());
+        List<Notification> allNotifications = notificationService.getAllNotifications();
+        assertTrue(allNotifications.isEmpty());
+        verify(notificationRepository).findAll();
     }
+
     @Test
     void getAllNotifications_WithMultipleNotificationsWithDifferentUserAndTaskIds_ShouldReturnAllNotifications(){
-        int userId = 1;
-        Notification notification1User1 = new Notification(1,userId,1,"Notification1");
-        Notification notification2User1 = new Notification(2,userId,2,"Notification2");
-        Notification notification1User2 = new Notification(3,userId+1,3,"Notification3");
-        notificationService.createNotification(notification1User1);
-        notificationService.createNotification(notification2User1);
-        notificationService.createNotification(notification1User2);
+
+        when(notificationRepository.findAll()).thenReturn(List.of(notificationUser1Task1,notificationUser1Task2,notificationUser2Task1));
         List<Notification> userNotifications = notificationService.getAllNotifications();
+
         assertAll(
                 ()->assertEquals(3,userNotifications.size()),
-                ()->assertTrue(userNotifications.contains(notification1User1)),
-                ()->assertTrue(userNotifications.contains(notification2User1)),
-                ()->assertTrue(userNotifications.contains(notification1User2))
+                ()->assertTrue(userNotifications.contains(notificationUser1Task1)),
+                ()->assertTrue(userNotifications.contains(notificationUser1Task2)),
+                ()->assertTrue(userNotifications.contains(notificationUser2Task1))
         );
+        verify(notificationRepository).findAll();
     }
 
     @Test
     void getNotificationsByTaskId_WithExistingTaskId_ShouldReturnListOfAllTaskNotifications() {
-        int taskId = 1;
-        Notification notification1User1Task1 = new Notification(1,1,taskId,"Notification1");
-        Notification notification2User1Task1 = new Notification(2,1,taskId,"Notification2");
-        Notification notification1User2Task1 = new Notification(3,2,taskId,"Notification3");
-        Notification notification1User1Task2 = new Notification(4,1,taskId+1,"Notification3");
-        notificationService.createNotification(notification1User1Task1);
-        notificationService.createNotification(notification2User1Task1);
-        notificationService.createNotification(notification1User2Task1);
-        notificationService.createNotification(notification1User1Task2);
-        List<Notification> userNotifications = notificationService.getNotificationsByTaskId(taskId);
+
+        when(notificationRepository.findByTaskId(1L)).thenReturn(List.of(notificationUser1Task1,notificationUser2Task1));
+        List<Notification> userNotifications = notificationService.getNotificationsByTaskId(1L);
         assertAll(
-                ()->assertEquals(3,userNotifications.size()),
-                ()->assertTrue(userNotifications.contains(notification1User1Task1)),
-                ()->assertTrue(userNotifications.contains(notification2User1Task1)),
-                ()->assertTrue(userNotifications.contains(notification1User2Task1))
+                ()->assertEquals(2,userNotifications.size()),
+                ()->assertTrue(userNotifications.contains(notificationUser1Task1)),
+                ()->assertTrue(userNotifications.contains(notificationUser2Task1))
         );
+        verify(notificationRepository).findByTaskId(1L);
     }
 
     @Test
     void getNotificationsByTaskId_WithNonExistentTaskId_ShouldReturnEmptyList() {
-        int taskId = 1;
-        Notification notification1User1Task1 = new Notification(1,1,taskId,"Notification1");
-        Notification notification1User1Task2 = new Notification(2,1,taskId+1,"Notification3");
-        notificationService.createNotification(notification1User1Task1);
-        notificationService.createNotification(notification1User1Task2);//shouldn't be listed
-        List<Notification> userNotifications = notificationService.getNotificationsByTaskId(taskId+2);
-        assertEquals(0,userNotifications.size());
+        when(notificationRepository.findByTaskId(0L)).thenReturn(List.of());
+
+        List<Notification> userNotifications = notificationService.getNotificationsByTaskId(0L);
+        assertTrue(userNotifications.isEmpty());
+        verify(notificationRepository).findByTaskId(0L);
 
     }
 

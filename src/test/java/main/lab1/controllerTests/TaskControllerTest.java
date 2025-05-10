@@ -1,11 +1,9 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.TaskController;
-import main.lab1.exceptions.UserNotFoundException;
-import main.lab1.model.Notification;
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
 import main.lab1.exceptions.DuplicateResourceException;
-import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,9 +84,9 @@ public class TaskControllerTest {
     void getTaskById_WithNonExistentId_ThrowsTaskNotFoundException() {
         long invalidId = 999;
         when(taskService.getTaskById(invalidId))
-                .thenThrow(new TaskNotFoundException(invalidId));
+                .thenThrow(new ResourceNotFoundException("Task with id" + invalidId + " not found"));
 
-        assertThrows(TaskNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 () -> taskController.getTaskById(invalidId));
     }
 
@@ -136,7 +134,7 @@ public class TaskControllerTest {
 
         Task newTask = new Task(1,1,"Title","Description", ZonedDateTime.now().plusHours(3));
         //doNothing().when(taskService).createTask(newTask);
-
+        when(taskService.createTask(newTask)).thenReturn(newTask);
         assertDoesNotThrow(
                 () -> taskController.createTask(newTask)
         );
@@ -160,10 +158,10 @@ public class TaskControllerTest {
         long nonExistentUserId = -1;
         Task impossibleTask = new Task(1,nonExistentUserId,"Title","Description", ZonedDateTime.now().plusHours(3));
 
-        doThrow(new UserNotFoundException(nonExistentUserId))
+        doThrow(new ResourceNotFoundException("User with id" + nonExistentUserId + " not found"))
                 .when(taskService).createTask(impossibleTask);
 
-        assertThrows(UserNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 () -> taskController.createTask(impossibleTask));
         verify(taskService, times(1)).createTask(impossibleTask);//is there really any reason to check that?
     }
@@ -187,10 +185,10 @@ public class TaskControllerTest {
     {
         long nonExistentTaskId = 999;
 
-        doThrow(new TaskNotFoundException(nonExistentTaskId))
+        doThrow(new ResourceNotFoundException("Task with id" +  nonExistentTaskId + " not found"))
                 .when(taskService).deleteTaskById(nonExistentTaskId);
 
-        assertThrows(TaskNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 ()->taskController.deleteTask(nonExistentTaskId)
         );
         verify(taskService, times(1)).deleteTaskById(nonExistentTaskId);//?
@@ -207,8 +205,8 @@ public class TaskControllerTest {
     @Test
     void handleTaskNotFoundException_ReturnsNotFoundStatus() {
         long nonExistentTaskId = 1;
-        TaskNotFoundException ex = new TaskNotFoundException( nonExistentTaskId);
-        ResponseEntity<String> response = taskController.handleTaskNotFoundException(ex);
+        ResourceNotFoundException ex = new ResourceNotFoundException("Task with id" + nonExistentTaskId + " not found");
+        ResponseEntity<String> response = taskController.handleResourceNotFoundException(ex);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }
