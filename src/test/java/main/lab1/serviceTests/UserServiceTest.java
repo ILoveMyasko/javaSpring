@@ -1,9 +1,9 @@
 package main.lab1.serviceTests;
 
 
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.User;
 import main.lab1.exceptions.DuplicateResourceException;
-import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.repos.UserRepository;
 import main.lab1.services.implementation.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +80,7 @@ public class UserServiceTest {
     void getUser_WithNonExistentId_ShouldThrowException() {
         long newUserId = 3;
         when(userRepository.findById(newUserId)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class,
+        assertThrows(ResourceNotFoundException.class,
                 () -> userService.getUserById(newUserId));
     }
 
@@ -105,6 +105,28 @@ public class UserServiceTest {
                 () -> assertTrue(users.contains(user1)),
                 () -> assertTrue(users.contains(user2)));
 
+    }
+
+    @Test
+    void existById_WithValidId_ReturnsTrue()
+    {
+        long validUserId = user1.getUserId();
+
+        when(userRepository.existsById(validUserId)).thenReturn(true);
+
+        assertTrue(userService.existsByUserId(validUserId));
+        verify(userRepository).existsById(validUserId);
+    }
+
+    @Test
+    void existById_WithInvalid_ReturnsFalse()
+    {
+        long invalidUserId = 555;
+
+        when(userRepository.existsById(invalidUserId)).thenReturn(false);
+
+        assertFalse(userService.existsByUserId(invalidUserId));
+        verify(userRepository).existsById(invalidUserId);
     }
 
 }

@@ -1,8 +1,7 @@
 package main.lab1.serviceTests;
 
-import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
-import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.repos.TaskRepository;
 import main.lab1.services.NotificationService;
 import main.lab1.services.implementation.TaskServiceImpl;
@@ -56,7 +55,7 @@ public class TaskServiceTest {
         long invalidUserId = invalidTask.getUserId();
         when(userService.existsByUserId(invalidUserId)).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> taskService.createTask(invalidTask));
+        assertThrows(ResourceNotFoundException.class, () -> taskService.createTask(invalidTask));
 
         verify(userService).existsByUserId(invalidUserId);
         verify(taskRepository, never()).save(any(Task.class));
@@ -97,7 +96,7 @@ public class TaskServiceTest {
         when(taskRepository.findById(invalidTaskId)).thenReturn(Optional.empty());
 
         assertThrows(
-                TaskNotFoundException.class, //what exception will be thrown
+                ResourceNotFoundException.class, //what exception will be thrown
                 () ->taskService.getTaskById(invalidTaskId));
         verify(taskRepository).findById(invalidTaskId);
     }
@@ -163,7 +162,7 @@ public class TaskServiceTest {
         assertDoesNotThrow(()->taskService.deleteTaskById(taskIdToDelete));
         when(taskRepository.findById(taskIdToDelete)).thenReturn(Optional.empty());
 
-        assertThrows(TaskNotFoundException.class,()->taskService.getTaskById(taskIdToDelete));
+        assertThrows(ResourceNotFoundException.class,()->taskService.getTaskById(taskIdToDelete));
 
         verify(taskRepository).deleteById(taskIdToDelete);
     }
@@ -171,6 +170,6 @@ public class TaskServiceTest {
     @Test
     void deleteTaskById_WithNonExistentTaskId_ShouldThrow() {
         long invalidTaskId = invalidTask.getTaskId();
-        assertThrows(TaskNotFoundException.class, ()-> taskService.deleteTaskById(invalidTaskId));
+        assertThrows(ResourceNotFoundException.class, ()-> taskService.deleteTaskById(invalidTaskId));
     }
 }
