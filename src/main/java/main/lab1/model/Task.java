@@ -3,15 +3,15 @@ package main.lab1.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.ZonedDateTime;
 
-@Data
-@EqualsAndHashCode
+
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor //mandatory for SpringJPA
 @Table(name = "tasks")
@@ -19,7 +19,8 @@ public class Task {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     long taskId;
-    @Positive long userId; // do I want to check it through autowiring services? or do I migrate all checks to db and make foreign keys
+    @Positive @NotNull
+    long userId; // do I want to check it through autowiring services? or do I migrate all checks to db and make foreign keys
     @NotEmpty @Column(length = 100) String taskTitle;
     @NotEmpty @Column(length = 255) String taskDescription;
     final ZonedDateTime createdAt = ZonedDateTime.now(); // do I want to remove default now? since postgres can autogen it

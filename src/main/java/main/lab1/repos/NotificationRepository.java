@@ -1,11 +1,15 @@
 package main.lab1.repos;
 
 import main.lab1.model.Notification;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface NotificationRepository  extends JpaRepository<Notification,Long> {
-    List<Notification> findByUserId(Long userId);
-    List<Notification> findByTaskId(Long taskId);
+@Repository
+public interface NotificationRepository {
+
+    List<Notification> findAll();
+    List<Notification> findByUserId(long id);
+    List<Notification> findByTaskId(long id);
+    Notification save(Notification newNotification);
 }

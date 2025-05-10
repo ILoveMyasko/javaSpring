@@ -7,13 +7,15 @@ import lombok.*;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-@Data //not recommended?
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor //mandatory for SpringJPA
 @Entity
-@Table(name = "users") //User is reserved name so gotta change to something else
+@Table(name = "users")
 public class User {
-    @Id @GeneratedValue(strategy = IDENTITY) // why from this idea cant understand that it needs to be not bigint but at least serial?
+    @Id @GeneratedValue(strategy = IDENTITY)
     @Column
     private long userId;
     @Column (nullable = false, length = 50)
