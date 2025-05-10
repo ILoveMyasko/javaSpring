@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class InternalUserRepository implements UserRepository {
 
     private final Map<Long, User> users = new HashMap<>(); // can skip <> params since java 7
-    private static final AtomicLong idCounter = new AtomicLong();
+    private final AtomicLong idCounter = new AtomicLong();
 
     @Override
     public boolean existsById(long id) {

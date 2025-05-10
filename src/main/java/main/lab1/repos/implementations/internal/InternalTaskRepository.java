@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Profile("internal")
 public class InternalTaskRepository implements TaskRepository {
     private final Map<Long, Task> tasks = new HashMap<>();
-    private static final AtomicLong idCounter = new AtomicLong();
+    private final AtomicLong idCounter = new AtomicLong();
 
 
     @Override

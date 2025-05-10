@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class InternalNotificationRepository implements NotificationRepository {
 
     private final List<Notification> notifications = new ArrayList<>();
-    private static final AtomicLong idCounter = new AtomicLong();
+    private final AtomicLong idCounter = new AtomicLong();
 
     @Override
     public List<Notification> findAll() {
