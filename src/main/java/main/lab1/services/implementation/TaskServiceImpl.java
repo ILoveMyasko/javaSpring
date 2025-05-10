@@ -1,10 +1,8 @@
 package main.lab1.services.implementation;
 
-import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
 import main.lab1.model.Notification;
-import main.lab1.exceptions.DuplicateResourceException;
-import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.repos.TaskRepository;
 
 import main.lab1.services.NotificationService;
@@ -35,14 +33,14 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public Task getTaskById(long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Task with id" + id + " not found"));
     }
 
     @Transactional
     public Task createTask(Task newTask) {
         if (!userService.existsByUserId(newTask.getUserId()))
         {
-            throw new UserNotFoundException(newTask.getUserId());
+            throw new ResourceNotFoundException("User with id" + newTask.getUserId() + " not found");
         }
         Task savedTask =  taskRepository.save(newTask);
         notificationService.createNotification(
@@ -64,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
             notificationService.createNotification(
                     new Notification(taskToDelete.getUserId(), taskToDelete.getTaskId(), "Task deleted!"));
         }
-        else throw new TaskNotFoundException(id);
+        else throw new ResourceNotFoundException("Task with id" + id + " not found");
     }
 
     @Transactional(readOnly = true)

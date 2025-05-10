@@ -1,9 +1,10 @@
 package main.lab1.services.implementation;
 
 import java.util.List;
+
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.User;
 import main.lab1.exceptions.DuplicateResourceException;
-import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.repos.UserRepository;
 import main.lab1.services.UserService;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User getUserById(long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id" + id + " not found"));
     }
 
     @Transactional(readOnly = true)
