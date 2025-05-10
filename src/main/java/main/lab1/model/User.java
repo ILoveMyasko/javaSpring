@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor //mandatory for SpringJPA
 @Entity
-@Table(name = "users") //User is reserved name so gotta change to something else
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
