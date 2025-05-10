@@ -1,11 +1,18 @@
 package main.lab1.repos;
 
+
+
 import main.lab1.model.Task;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface TaskRepository extends JpaRepository<Task,Long> {
-    List<Task> findByUserId(Long userId); //find all would've been better but this works too
+public interface TaskRepository {
 
+    boolean existsById (long id);
+    Task save (Task newTask);
+    Optional<Task> findById(long id);
+    List<Task> findAll();
+    List<Task> findByUserId(long id);
+    void deleteById(long id);
 }
