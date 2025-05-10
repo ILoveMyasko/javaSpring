@@ -87,13 +87,7 @@ public class UserControllerTest {
 
         assertThrows(UserNotFoundException.class,
                 () -> userController.getUserById(invalidId));
-        // we cant check the http code because we don't actually create Spring MVC?
-        /*
-        UserNotFoundException ex = new UserNotFoundException("User not found");
-        ResponseEntity<String> response = userController.handleUserNotFoundException(ex); //here not exception but userid
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not found", response.getBody());
-         */
+
     }
     //to test @Valid need to create integration tests mockMvc?
     @Test
