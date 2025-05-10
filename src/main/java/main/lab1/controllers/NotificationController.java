@@ -1,11 +1,7 @@
 package main.lab1.controllers;
 
-import jakarta.validation.Valid;
-import main.lab1.exceptions.TaskNotFoundException;
-import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.model.Notification;
 import main.lab1.services.NotificationService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,16 +28,6 @@ public class NotificationController {
     @GetMapping("/tasks/{id}")
     public ResponseEntity<List<Notification>> getNotificationsByTaskId(@PathVariable("id") long uId){
         return ResponseEntity.ok(notificationService.getNotificationsByTaskId(uId));
-    }
-
-    @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
 }
