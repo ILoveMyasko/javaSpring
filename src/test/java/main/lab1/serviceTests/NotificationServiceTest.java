@@ -2,7 +2,7 @@ package main.lab1.serviceTests;
 
 import main.lab1.model.Notification;
 
-import main.lab1.repos.NotificationRepository;
+import main.lab1.repos.implementations.ExternalNotificationRepository;
 
 import main.lab1.services.NotificationServiceImpl;
 import main.lab1.services.TaskService;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class NotificationServiceTest {
 
     @Mock
-    private NotificationRepository notificationRepository;
+    private ExternalNotificationRepository notificationRepository;
 
     @Mock
     private UserService userService;
