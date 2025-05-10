@@ -35,6 +35,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional(readOnly = true)
+    public boolean existsByUserId ( long id)
+    {
+        return userRepository.existsById(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
