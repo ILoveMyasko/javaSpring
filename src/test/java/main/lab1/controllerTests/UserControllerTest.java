@@ -2,7 +2,7 @@ package main.lab1.controllerTests;
 
 import main.lab1.controllers.UserController;
 import main.lab1.model.User;
-import main.lab1.exceptions.UserAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -100,29 +100,30 @@ public class UserControllerTest {
     void createUser_NewUser_CallsService() {
 
         User newUser = new User(1, "John", "brutalkin_V@mail.ru");
-        doNothing().when(userService).createUser(newUser);
+        //doNothing().when(userService).createUser(newUser);
 
         assertDoesNotThrow(() -> userController.createUser(newUser));
         verify(userService, times(1)).createUser(newUser);
     }
 
     @Test
-    void createUser_DuplicateUser_ThrowsUserAlreadyExistsException() {
-        User duplicateUser = new User(1, "John", "brutalkin_V@mail.ru");
+    void createUser_DuplicateUser_ThrowsDuplicateResourceException() {
+        long duplicateUserId = 1;
+        User duplicateUser = new User(duplicateUserId, "John", "brutalkin_V@mail.ru");
 
-        doThrow(new UserAlreadyExistsException(1))
+        doThrow(new DuplicateResourceException("User with id " + duplicateUserId +" already exists"))
                 .when(userService).createUser(duplicateUser);
 
-        assertThrows(UserAlreadyExistsException.class,
+        assertThrows(DuplicateResourceException.class,
                 () -> userController.createUser(duplicateUser));
         verify(userService, times(1)).createUser(duplicateUser);
     }
 
     @Test
-    void handleUserAlreadyExistsException_ReturnsConflictStatus() {
+    void handleDuplicateResourceException_ReturnsConflictStatus() {
         int duplicateUserId = 1;
-        UserAlreadyExistsException ex = new UserAlreadyExistsException(duplicateUserId);
-        ResponseEntity<String> response = userController.handleUserAlreadyExistsException(ex);
+        DuplicateResourceException ex = new DuplicateResourceException("User with id " + duplicateUserId +" already exists");
+        ResponseEntity<String> response = userController.handleDuplicateResourceException(ex);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }

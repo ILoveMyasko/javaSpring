@@ -2,7 +2,7 @@ package main.lab1.serviceTests;
 
 import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.model.Task;
-import main.lab1.exceptions.TaskAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.model.User;
 import main.lab1.services.NotificationService;
@@ -67,7 +67,7 @@ public class TaskServiceTest {
 
         taskService.createTask(task1);
         assertThrows(
-                TaskAlreadyExistsException.class,
+                DuplicateResourceException.class,
                 () -> taskService.createTask(task2)
         );
     }

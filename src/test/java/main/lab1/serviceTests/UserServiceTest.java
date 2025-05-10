@@ -1,7 +1,7 @@
 package main.lab1.serviceTests;
 
 import main.lab1.model.User;
-import main.lab1.exceptions.UserAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.services.UserService;
 import main.lab1.services.UserServiceImpl;
@@ -43,7 +43,7 @@ public class UserServiceTest {
         User user = new User(userId, "Alex", "alex@ex.com");
         User user2 = new User(userId, "Anna", "anna@example.com");
         userService.createUser(user);
-        assertThrows(UserAlreadyExistsException.class,
+        assertThrows(DuplicateResourceException.class,
                 () -> userService.createUser(user2)
         );
     }

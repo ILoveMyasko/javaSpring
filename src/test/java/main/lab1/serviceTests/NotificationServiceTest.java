@@ -3,11 +3,9 @@ package main.lab1.serviceTests;
 import main.lab1.controllers.NotificationController;
 import main.lab1.model.Notification;
 
-import main.lab1.services.NotificationService;
 import main.lab1.services.NotificationServiceImpl;
 import main.lab1.services.TaskService;
 import main.lab1.services.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

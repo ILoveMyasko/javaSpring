@@ -1,9 +1,10 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.TaskController;
+import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.model.Notification;
 import main.lab1.model.Task;
-import main.lab1.exceptions.TaskAlreadyExistsException;
+import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskService;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class) //activate support of mocks (Junit5)
 public class TaskControllerTest {
 
-    @Mock //mock taskService(dummy)
+    @Mock
     private TaskService taskService;
 
     @InjectMocks  //It just does this?
@@ -130,12 +131,11 @@ public class TaskControllerTest {
         verify(taskService,times(1)).getTasksByUserId(userId);
 
     }
-    //to test @Valid need to create longegration tests mockMvc?
     @Test
     void createTask_NewTask_CallsService() {
 
         Task newTask = new Task(1,1,"Title","Description", ZonedDateTime.now().plusHours(3));
-        doNothing().when(taskService).createTask(newTask);
+        //doNothing().when(taskService).createTask(newTask);
 
         assertDoesNotThrow(
                 () -> taskController.createTask(newTask)
@@ -144,14 +144,14 @@ public class TaskControllerTest {
     }
 
     @Test
-    void createTask_DuplicateTask_ThrowsTaskAlreadyExistsException() {
+    void createTask_DuplicateTask_ThrowsDuplicateResourceException() {
         long duplicateTaskId = 1;
         Task duplicateTask = new Task(duplicateTaskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
 
-        doThrow(new TaskAlreadyExistsException(duplicateTaskId))
+        doThrow(new DuplicateResourceException("Task with id " + duplicateTaskId +" already exists"))
                 .when(taskService).createTask(duplicateTask);
         //ResponseEntity<List<Task>> response = taskController.createTask(duplicateTask);
-        assertThrows(TaskAlreadyExistsException.class,
+        assertThrows(DuplicateResourceException.class,
                 () -> taskController.createTask(duplicateTask));
         verify(taskService, times(1)).createTask(duplicateTask);//is there really any reason to check that?
     }
@@ -160,10 +160,10 @@ public class TaskControllerTest {
         long nonExistentUserId = -1;
         Task impossibleTask = new Task(1,nonExistentUserId,"Title","Description", ZonedDateTime.now().plusHours(3));
 
-        doThrow(new TaskAlreadyExistsException(nonExistentUserId))
+        doThrow(new UserNotFoundException(nonExistentUserId))
                 .when(taskService).createTask(impossibleTask);
 
-        assertThrows(TaskAlreadyExistsException.class,
+        assertThrows(UserNotFoundException.class,
                 () -> taskController.createTask(impossibleTask));
         verify(taskService, times(1)).createTask(impossibleTask);//is there really any reason to check that?
     }
@@ -197,10 +197,10 @@ public class TaskControllerTest {
     }
 
     @Test
-    void handleTaskAlreadyExistsException_ReturnsConflictStatus() {
+    void handleDuplicateResourceException_ReturnsConflictStatus() {
         long duplicateTaskId = 1;
-        TaskAlreadyExistsException ex = new TaskAlreadyExistsException( duplicateTaskId );
-        ResponseEntity<String> response = taskController.handleTaskAlreadyExistsException(ex);
+        DuplicateResourceException ex = new DuplicateResourceException("Task with id " + duplicateTaskId +" already exists");
+        ResponseEntity<String> response = taskController.handleDuplicateResourceException(ex);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 
