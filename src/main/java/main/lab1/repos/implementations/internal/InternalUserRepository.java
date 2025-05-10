@@ -1,4 +1,4 @@
-package main.lab1.repos.implementations;
+package main.lab1.repos.implementations.internal;
 import main.lab1.repos.UserRepository;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,7 +28,8 @@ public class InternalUserRepository implements UserRepository {
     @Override
     public User save(User newUser) {
         newUser.setUserId(idCounter.incrementAndGet());
-        return users.put(newUser.getUserId(), newUser);
+        users.put(newUser.getUserId(), newUser);
+        return newUser;
     }
 
     @Override

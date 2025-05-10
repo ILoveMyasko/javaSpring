@@ -1,7 +1,8 @@
-package main.lab1.services;
+package main.lab1.services.implementation;
 
 import main.lab1.model.Notification;
 import main.lab1.repos.NotificationRepository;
+import main.lab1.services.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

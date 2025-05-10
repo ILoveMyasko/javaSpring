@@ -1,4 +1,4 @@
-package main.lab1.services;
+package main.lab1.services.implementation;
 
 import main.lab1.model.Task;
 import main.lab1.model.Notification;
@@ -6,6 +6,9 @@ import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.repos.TaskRepository;
 
+import main.lab1.services.NotificationService;
+import main.lab1.services.TaskService;
+import main.lab1.services.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +38,6 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public Task createTask(Task newTask) {
         userService.getUserById(newTask.getUserId());
-        if (taskRepository.existsById(newTask.getTaskId())) {
-            throw new DuplicateResourceException("Task with id " + newTask.getTaskId() + " already exists");
-        }
         Task savedTask =  taskRepository.save(newTask);
         notificationService.createNotification(new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
         return savedTask;

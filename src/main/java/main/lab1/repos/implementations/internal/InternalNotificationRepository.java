@@ -1,4 +1,4 @@
-package main.lab1.repos.implementations;
+package main.lab1.repos.implementations.internal;
 
 import main.lab1.repos.NotificationRepository;
 import main.lab1.model.Notification;

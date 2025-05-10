@@ -1,4 +1,4 @@
-package main.lab1.repos.implementations;
+package main.lab1.repos.implementations.internal;
 
 import main.lab1.repos.TaskRepository;
 import main.lab1.model.Task;
@@ -23,7 +23,8 @@ public class InternalTaskRepository implements TaskRepository {
     @Override
     public Task save(Task newTask) {
         newTask.setTaskId(idCounter.incrementAndGet());
-        return tasks.put(newTask.getTaskId(), newTask);
+        tasks.put(newTask.getTaskId(), newTask);
+        return newTask;
     }
 
     @Override
