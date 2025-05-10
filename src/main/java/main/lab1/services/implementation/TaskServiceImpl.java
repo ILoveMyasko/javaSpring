@@ -1,5 +1,6 @@
 package main.lab1.services.implementation;
 
+import main.lab1.exceptions.UserNotFoundException;
 import main.lab1.model.Task;
 import main.lab1.model.Notification;
 import main.lab1.exceptions.DuplicateResourceException;
@@ -37,11 +38,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     public Task createTask(Task newTask) {
-        userService.getUserById(newTask.getUserId());
+        if (!userService.existsByUserId(newTask.getUserId()))
+        {
+            throw new UserNotFoundException(newTask.getUserId());
+        }
         Task savedTask =  taskRepository.save(newTask);
         notificationService.createNotification(new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
         return savedTask;
-
     }
 
     @Transactional(readOnly = true)
