@@ -1,6 +1,7 @@
 package main.lab1.services;
 
-import main.lab1.entities.Notification;
+import main.lab1.model.Notification;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

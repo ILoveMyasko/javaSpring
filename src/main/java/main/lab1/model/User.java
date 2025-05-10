@@ -1,4 +1,4 @@
-package main.lab1.entities;
+package main.lab1.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.*;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class User {
-    private @Positive int userId;
+    private @Positive long userId;
     private @NotBlank String name;
     private @Email String email;
 }

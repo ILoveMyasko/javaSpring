@@ -1,6 +1,6 @@
 package main.lab1.services;
 
-import main.lab1.entities.Task;
+import main.lab1.model.Task;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,13 +8,13 @@ import java.util.List;
 @Service
 public interface TaskService {
 
-    Task getTaskById(int id);
+    Task getTaskById(long id);
 
     Task createTask(Task task);
 
     List<Task> getAllTasks();
 
-    void deleteTaskById(int id);
+    void deleteTaskById(long id);
 
-    List<Task> getTasksByUserId(int id);
+    List<Task> getTasksByUserId(long id);
 }

@@ -1,7 +1,7 @@
 package main.lab1.controllers;
 
 import jakarta.validation.Valid;
-import main.lab1.entities.User;
+import main.lab1.model.User;
 import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") int uId) {
+    public ResponseEntity<User> getUserById(@PathVariable("id") long uId) {
         return ResponseEntity.ok(userService.getUserById(uId));
 
     }

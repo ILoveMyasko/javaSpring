@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import main.lab1.entities.User;
+import main.lab1.model.User;
 import main.lab1.exceptions.DuplicateResourceException;
 import main.lab1.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final Map<Integer, User> users = new HashMap<Integer, User>(); // can skip <> params since java 7
+    private final Map<Long, User> users = new HashMap<>(); // can skip <> params since java 7
 
     public User createUser(User newUser) {
         if (users.containsKey(newUser.getUserId())) {
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         return newUser;
     }
 
-    public User getUserById(int id) {
+    public User getUserById(long id) {
         if (!users.containsKey(id)) {
             throw new UserNotFoundException(id);
         } else return users.get(id);

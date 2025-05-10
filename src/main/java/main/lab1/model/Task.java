@@ -1,4 +1,4 @@
-package main.lab1.entities;
+package main.lab1.model;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,8 +12,8 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 public class Task {
 
-    @Positive int id; //primitives cannot be null
-    @Positive int userId;
+    @Positive long taskId; //primitives cannot be null
+    @Positive long userId;
     @NotEmpty String taskTitle;
     @NotEmpty String taskDescription;
     final ZonedDateTime createdAt = ZonedDateTime.now();
@@ -25,8 +25,8 @@ public class Task {
         return expiresAt == null || expiresAt.isAfter(createdAt);
     }
 
-    public Task(int id, int userId, String taskTitle, String taskDescription, ZonedDateTime expiresAt) {
-        this.id = id;
+    public Task(long id, long userId, String taskTitle, String taskDescription, ZonedDateTime expiresAt) {
+        this.taskId = id;
         this.userId = userId;
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;

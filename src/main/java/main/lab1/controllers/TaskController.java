@@ -1,7 +1,8 @@
 package main.lab1.controllers;
 import jakarta.validation.Valid;
-import main.lab1.entities.Task;
 import main.lab1.exceptions.DuplicateResourceException;
+import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.model.Task;
 import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskService;
 import org.springframework.http.HttpStatus;
@@ -25,12 +26,12 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable("id") int uId){
+    public ResponseEntity<Task> getTaskById(@PathVariable("id") long uId){
         return ResponseEntity.ok(taskService.getTaskById(uId));
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<List<Task>> getAllTasksByUserId(@PathVariable("id") int uId){
+    public ResponseEntity<List<Task>> getAllTasksByUserId(@PathVariable("id") long uId){
         return ResponseEntity.ok(taskService.getTasksByUserId(uId));
     }
 
@@ -40,7 +41,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable("id") int tId){
+    public void deleteTask(@PathVariable("id") long tId){
         taskService.deleteTaskById(tId);
     }
 
@@ -52,6 +53,11 @@ public class TaskController {
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
