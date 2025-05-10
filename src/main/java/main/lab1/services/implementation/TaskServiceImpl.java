@@ -24,7 +24,9 @@ public class TaskServiceImpl implements TaskService {
     private final UserService userService;
     private final NotificationService notificationService;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserService userService, NotificationService notificationService) {
+    public TaskServiceImpl(TaskRepository taskRepository,
+                           UserService userService,
+                           NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.notificationService = notificationService;
@@ -43,7 +45,8 @@ public class TaskServiceImpl implements TaskService {
             throw new UserNotFoundException(newTask.getUserId());
         }
         Task savedTask =  taskRepository.save(newTask);
-        notificationService.createNotification(new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
+        notificationService.createNotification(
+                new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
         return savedTask;
     }
 
@@ -58,7 +61,8 @@ public class TaskServiceImpl implements TaskService {
         if (taskOptional.isPresent()) {
             Task taskToDelete = taskOptional.get();
             taskRepository.deleteById(id);
-            notificationService.createNotification(new Notification(taskToDelete.getUserId(), taskToDelete.getTaskId(), "Task deleted!"));
+            notificationService.createNotification(
+                    new Notification(taskToDelete.getUserId(), taskToDelete.getTaskId(), "Task deleted!"));
         }
         else throw new TaskNotFoundException(id);
     }
