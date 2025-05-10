@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-@Data //not recommended?
+
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor //mandatory for SpringJPA
 @Entity
-@Table(name = "users") //User is reserved name so gotta change to something else
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
