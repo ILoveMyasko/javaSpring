@@ -3,6 +3,7 @@ package main.lab1.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
@@ -18,7 +19,8 @@ public class Task {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     long taskId; //primitives cannot be null
-    @Positive long userId;
+    @Positive @NotNull
+    long userId;
     @NotEmpty String taskTitle;
     @NotEmpty String taskDescription;
     final ZonedDateTime createdAt = ZonedDateTime.now();
