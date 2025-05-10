@@ -4,14 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.ZonedDateTime;
 
-@Data
-@EqualsAndHashCode
+
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor //mandatory for SpringJPA
 @Table(name = "tasks")

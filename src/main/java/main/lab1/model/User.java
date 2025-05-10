@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-@Data
-@EqualsAndHashCode
+
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor //mandatory for SpringJPA
 @Entity
