@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-@Profile("h2")
+@Profile({"h2","postgres"})
 public interface ExternalNotificationRepository extends NotificationRepository, JpaRepository<Notification,Long> {
 
 }
