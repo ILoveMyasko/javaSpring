@@ -70,8 +70,10 @@ public class TaskServiceImpl implements TaskService {
         if (taskOptional.isPresent()) {
             Task taskToMarkCompleted = taskOptional.get();
             taskToMarkCompleted.setCompleted(true);
-            notificationService.createNotification(
-                    new Notification(taskToMarkCompleted.getUserId(), taskToMarkCompleted.getTaskId(), "Task completed!"));
+            notificationService.createNotification(new Notification(
+                    taskToMarkCompleted.getUserId(),
+                    taskToMarkCompleted.getTaskId(),
+                    "Task completed!"));
         }
         else throw new ResourceNotFoundException("Task with id " + id + " not found");
     }
