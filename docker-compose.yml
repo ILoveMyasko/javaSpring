@@ -11,9 +11,8 @@ services:
       - SPRING_DATASOURCE_URL =jdbc:postgresql://postgres:5432/postgres
       - SPRING_DATASOURCE_USERNAME =postgres
       - SPRING_DATASOURCE_PASSWORD =postgres
-      - SPRING_DATA_REDIS_HOST =redis-cache # caching stuff
+      - SPRING_DATA_REDIS_HOST =redis-cache
       - SPRING_DATA_REDIS_PORT =6379
-      - SPRING_CACHE_REDIS_TIME-TO-LIVE =60000
     depends_on:
       - postgres
       - redis-cache
