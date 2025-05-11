@@ -33,7 +33,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(readOnly = true)
     public Task getTaskById(long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task with id" + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
     }
 
     @Transactional
@@ -43,8 +43,6 @@ public class TaskServiceImpl implements TaskService {
             throw new ResourceNotFoundException("User with id " + newTask.getUserId() + " not found");
         }
         Task savedTask =  taskRepository.save(newTask);
-        System.out.println(savedTask.getTaskId());
-        System.out.println(savedTask.getUserId());
         notificationService.createNotification(
                 new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
         return savedTask;
@@ -64,11 +62,24 @@ public class TaskServiceImpl implements TaskService {
             notificationService.createNotification(
                     new Notification(taskToDelete.getUserId(), taskToDelete.getTaskId(), "Task deleted!"));
         }
-        else throw new ResourceNotFoundException("Task with id" + id + " not found");
+        else throw new ResourceNotFoundException("Task with id " + id + " not found");
+    }
+
+    @Transactional
+    public void markAsCompleted(long id)
+    {
+        Optional<Task> taskOptional = taskRepository.findById(id);
+        if (taskOptional.isPresent()) {
+            Task taskToMarkCompleted = taskOptional.get();
+            taskToMarkCompleted.setCompleted(true);
+            notificationService.createNotification(
+                    new Notification(taskToMarkCompleted.getUserId(), taskToMarkCompleted.getTaskId(), "Task completed!"));
+        }
+        else throw new ResourceNotFoundException("Task with id " + id + " not found");
     }
 
     @Transactional(readOnly = true)
     public List<Task> getTasksByUserId(long id) {
-        return taskRepository.findByUserId(id);
+        return taskRepository.findByUserIdAndIsCompletedFalse(id);
     }
 }
