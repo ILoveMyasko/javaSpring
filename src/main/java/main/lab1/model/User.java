@@ -12,8 +12,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor //mandatory for SpringJPA
+//mandatory for SpringJPA
 @Entity
 @Table(name = "users")
 public class User {
@@ -21,23 +20,22 @@ public class User {
     private Long userId;
     @NotBlank @Column (nullable = false, length = 50)
     private String name;
-    @Email @Column (length = 50)
+    @Email @Column (nullable = false, length = 50)
     private String email;
     @Setter(AccessLevel.NONE) @Column(nullable = false)
-    private ZonedDateTime registrationTime;
+    private ZonedDateTime registeredAt;
 
-    @PrePersist
-    private void onCreate(){
-        this.registrationTime = ZonedDateTime.now();
-    }
 
     public User(long userId,String name, String email)
     {
         this.userId = userId;
         this.name = name;
         this.email = email;
-        this.registrationTime = ZonedDateTime.now();
+        this.registeredAt = ZonedDateTime.now();
     }
 
-
+    public User(){
+        System.out.println("hre");
+        this.registeredAt = ZonedDateTime.now();
+    }
 }

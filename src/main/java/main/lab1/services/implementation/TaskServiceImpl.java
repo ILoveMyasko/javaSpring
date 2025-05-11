@@ -40,9 +40,11 @@ public class TaskServiceImpl implements TaskService {
     public Task createTask(Task newTask) {
         if (!userService.existsByUserId(newTask.getUserId()))
         {
-            throw new ResourceNotFoundException("User with id" + newTask.getUserId() + " not found");
+            throw new ResourceNotFoundException("User with id " + newTask.getUserId() + " not found");
         }
         Task savedTask =  taskRepository.save(newTask);
+        System.out.println(savedTask.getTaskId());
+        System.out.println(savedTask.getUserId());
         notificationService.createNotification(
                 new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
         return savedTask;

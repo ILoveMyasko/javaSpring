@@ -3,7 +3,6 @@ package main.lab1.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
@@ -12,8 +11,7 @@ import java.time.ZonedDateTime;
 
 @Getter
 @Setter
-@Entity
-@NoArgsConstructor //mandatory for SpringJPA
+@Entity //mandatory for SpringJPA
 @Table(name = "tasks")
 public class Task {
 
@@ -21,9 +19,9 @@ public class Task {
     private Long taskId;
     @Positive @Column(nullable = false)
     private long userId;
-    @NotEmpty @Column(length = 100)
+    @NotEmpty @Column(nullable = false, length = 100)
     private String taskTitle;
-    @NotEmpty @Column(length = 1000)
+    @Column(length = 1000)
     private String taskDescription;
     @Setter(AccessLevel.NONE) @Column(nullable = false)
     private ZonedDateTime createdAt; // do I want to remove default now? since postgres can do it
@@ -32,8 +30,7 @@ public class Task {
     @Column(nullable = false)
     private boolean isCompleted;
 
-    @PrePersist
-    private void onCreate(){
+    public Task(){
         this.createdAt = ZonedDateTime.now();
         this.isCompleted = false;
     }
