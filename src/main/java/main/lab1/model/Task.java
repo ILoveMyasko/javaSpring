@@ -3,7 +3,6 @@ package main.lab1.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
@@ -12,20 +11,29 @@ import java.time.ZonedDateTime;
 
 @Getter
 @Setter
-@Entity
-@NoArgsConstructor //mandatory for SpringJPA
+@Entity //mandatory for SpringJPA
 @Table(name = "tasks")
 public class Task {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long taskId; //primitives cannot be null
-    @Positive @NotNull
-    long userId;
-    @NotEmpty String taskTitle;
-    @NotEmpty String taskDescription;
-    final ZonedDateTime createdAt = ZonedDateTime.now();
-    ZonedDateTime expiresAt;
-    boolean isCompleted = false;
+    private Long taskId;
+    @Positive @Column(nullable = false)
+    private long userId;
+    @NotEmpty @Column(nullable = false, length = 100)
+    private String taskTitle;
+    @Column(length = 1000)
+    private String taskDescription;
+    @Setter(AccessLevel.NONE) @Column(nullable = false)
+    private ZonedDateTime createdAt; // do I want to remove default now? since postgres can do it
+    @Column(nullable = false)
+    private ZonedDateTime expiresAt;
+    @Column(nullable = false)
+    private boolean isCompleted;
+
+    public Task(){
+        this.createdAt = ZonedDateTime.now();
+        this.isCompleted = false;
+    }
 
     @AssertTrue(message = "expiresAt must be after createdAt")
     private boolean isExpiresAtValid() {
@@ -38,7 +46,7 @@ public class Task {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.expiresAt = expiresAt;
-        // createdAt = .now
-        // isCompleted = false default
+        this.createdAt = ZonedDateTime.now();
+        this.isCompleted = false;
     }
 }

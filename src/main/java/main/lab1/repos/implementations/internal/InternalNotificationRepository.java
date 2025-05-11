@@ -22,12 +22,16 @@ public class InternalNotificationRepository implements NotificationRepository {
 
     @Override
     public List<Notification> findByUserId(long userId) {
-        return notifications.stream().filter(notification -> notification.getUserId() == userId).toList();
+        return notifications.stream()
+                .filter(notification -> notification.getUserId() == userId)
+                .toList();
     }
 
     @Override
     public List<Notification> findByTaskId(long taskId) {
-        return notifications.stream().filter(notification -> notification.getTaskId() == taskId).toList();
+        return notifications.stream()
+                .filter(notification -> notification.getTaskId() == taskId)
+                .toList();
     }
 
     @Override

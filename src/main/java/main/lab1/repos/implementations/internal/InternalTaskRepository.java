@@ -38,8 +38,13 @@ public class InternalTaskRepository implements TaskRepository {
     }
 
     @Override
+    public List<Task> findByUserIdAndIsCompletedFalse(long id) {
+        return tasks.values().stream().filter(task -> task.getUserId() == id && !task.isCompleted()).toList();
+    }
+
+    @Override
     public List<Task> findByUserId(long id) {
-        return tasks.values().stream().filter(task -> task.getUserId() == id).toList();
+        return tasks.values().stream().filter(task -> task.getUserId() == id ).toList();
     }
 
     @Override

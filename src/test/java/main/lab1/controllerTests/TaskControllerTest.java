@@ -96,6 +96,7 @@ public class TaskControllerTest {
 
 
         Task task1User1 = new Task(1,userId,"Title1","Description1", ZonedDateTime.now().plusHours(3));
+        System.out.println(task1User1.getExpiresAt());
         Task task2User1 = new Task(2,userId,"Title2","Description2", ZonedDateTime.now().plusHours(3));
         Task task1User2 = new Task(3,userId+1,"Title3","Description3", ZonedDateTime.now().plusHours(3));
 

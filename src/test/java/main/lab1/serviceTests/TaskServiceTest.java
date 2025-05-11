@@ -130,7 +130,7 @@ public class TaskServiceTest {
     void getTasksByUserId_WithExistingUserId_ShouldReturnListOfAllUsersTasks() {
         long userId = taskUser1.getUserId();
 
-        when(taskRepository.findByUserId(userId)).thenReturn(List.of(taskUser1,task2User1));
+        when(taskRepository.findByUserIdAndIsCompletedFalse(userId)).thenReturn(List.of(taskUser1,task2User1));
 
         List<Task> userTasks = taskService.getTasksByUserId(userId);
         assertAll(
@@ -138,18 +138,18 @@ public class TaskServiceTest {
                 ()->assertTrue(userTasks.contains(taskUser1)),
                 ()->assertTrue(userTasks.contains(task2User1))
         );
-        verify(taskRepository).findByUserId(userId);
+        verify(taskRepository).findByUserIdAndIsCompletedFalse(userId);
     }
 
     @Test
     void getTasksByUserId_WithNonExistentUserId_ShouldReturnEmptyList() {
         long invalidUserId = invalidTask.getUserId();
-        when(taskRepository.findByUserId(invalidUserId)).thenReturn(List.of());
+        when(taskRepository.findByUserIdAndIsCompletedFalse(invalidUserId)).thenReturn(List.of());
 
         List<Task> userTasks = taskService.getTasksByUserId(invalidUserId);
 
         assertEquals(0,userTasks.size());
-        verify(taskRepository).findByUserId(invalidUserId);
+        verify(taskRepository).findByUserIdAndIsCompletedFalse(invalidUserId);
     }
 
     @Test
@@ -172,4 +172,33 @@ public class TaskServiceTest {
         long invalidTaskId = invalidTask.getTaskId();
         assertThrows(ResourceNotFoundException.class, ()-> taskService.deleteTaskById(invalidTaskId));
     }
+
+    @Test
+    void markAsCompleted_shouldSetCompletedAndSendNotification() {
+        Task task = new Task();
+        task.setTaskId(1L);
+        task.setUserId(100L);
+        task.setCompleted(false);
+
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+
+        taskService.markAsCompleted(1L);
+
+        assertTrue(task.isCompleted());
+        verify(notificationService).createNotification(
+                argThat(notification ->
+                        notification.getUserId() == 100L &&
+                                notification.getTaskId() == 1L &&
+                                notification.getText().equals("Task completed!")
+                )
+        );
+    }
+    @Test
+    void markAsCompleted_shouldThrowWhenTaskNotFound() {
+        when(taskRepository.findById(42L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> taskService.markAsCompleted(42L));
+        verifyNoInteractions(notificationService);
+    }
+
 }

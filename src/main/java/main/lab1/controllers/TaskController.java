@@ -44,6 +44,11 @@ public class TaskController {
         taskService.deleteTaskById(tId);
     }
 
+    @PatchMapping("/complete/{id}")
+    public ResponseEntity<Void> markAsCompleted(@PathVariable long id) {
+        taskService.markAsCompleted(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<String> handleDuplicateResourceException(DuplicateResourceException e) {
