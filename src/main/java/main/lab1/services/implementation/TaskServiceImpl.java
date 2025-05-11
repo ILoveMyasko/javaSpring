@@ -58,9 +58,7 @@ public class TaskServiceImpl implements TaskService {
         Optional<Task> taskOptional = taskRepository.findById(id);
         if (taskOptional.isPresent()) {
             Task taskToDelete = taskOptional.get();
-            taskRepository.deleteById(id);
-            notificationService.createNotification(
-                    new Notification(taskToDelete.getUserId(), taskToDelete.getTaskId(), "Task deleted!"));
+            taskRepository.deleteById(taskToDelete.getTaskId());
         }
         else throw new ResourceNotFoundException("Task with id " + id + " not found");
     }
