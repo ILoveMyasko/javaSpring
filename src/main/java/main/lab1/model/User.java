@@ -35,7 +35,6 @@ public class User {
     }
 
     public User(){
-        System.out.println("hre");
         this.registeredAt = ZonedDateTime.now();
     }
 }
