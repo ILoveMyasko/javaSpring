@@ -1,7 +1,6 @@
 package main.lab1.repos;
 
 import main.lab1.model.Task;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,8 +11,10 @@ public interface TaskRepository {
 
     boolean existsById (long id);
     Task save (Task newTask);
+
     Optional<Task> findById(long id);
     List<Task> findAll();
     List<Task> findByUserId(long id);
+    List<Task> findByUserIdAndIsCompletedFalse(long id);
     void deleteById(long id);
 }
