@@ -172,4 +172,33 @@ public class TaskServiceTest {
         long invalidTaskId = invalidTask.getTaskId();
         assertThrows(ResourceNotFoundException.class, ()-> taskService.deleteTaskById(invalidTaskId));
     }
+
+    @Test
+    void markAsCompleted_shouldSetCompletedAndSendNotification() {
+        Task task = new Task();
+        task.setTaskId(1L);
+        task.setUserId(100L);
+        task.setCompleted(false);
+
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+
+        taskService.markAsCompleted(1L);
+
+        assertTrue(task.isCompleted());
+        verify(notificationService).createNotification(
+                argThat(notification ->
+                        notification.getUserId() == 100L &&
+                                notification.getTaskId() == 1L &&
+                                notification.getText().equals("Task completed!")
+                )
+        );
+    }
+    @Test
+    void markAsCompleted_shouldThrowWhenTaskNotFound() {
+        when(taskRepository.findById(42L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> taskService.markAsCompleted(42L));
+        verifyNoInteractions(notificationService);
+    }
+
 }
