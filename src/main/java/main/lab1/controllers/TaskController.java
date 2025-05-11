@@ -1,9 +1,8 @@
 package main.lab1.controllers;
 import jakarta.validation.Valid;
-import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.exceptions.DuplicateResourceException;
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
-import main.lab1.exceptions.TaskAlreadyExistsException;
-import main.lab1.exceptions.TaskNotFoundException;
 import main.lab1.services.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,20 +46,21 @@ public class TaskController {
         return ok(taskService.deleteTaskById(tId));
     }
 
+    @PatchMapping("/complete/{id}")
+    public ResponseEntity<Void> markAsCompleted(@PathVariable long id) {
+        taskService.markAsCompleted(id);
+        return ResponseEntity.noContent().build();
+    }
 
-    @ExceptionHandler(TaskAlreadyExistsException.class)
-    public ResponseEntity<String> handleTaskAlreadyExistsException(TaskAlreadyExistsException e) {
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<String> handleDuplicateResourceException(DuplicateResourceException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
-    @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException e) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
 }
 

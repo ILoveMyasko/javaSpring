@@ -1,14 +1,13 @@
 package main.lab1.serviceTests;
 
-import main.lab1.exceptions.UserNotFoundException;
+import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
-import main.lab1.exceptions.TaskAlreadyExistsException;
-import main.lab1.exceptions.TaskNotFoundException;
-import main.lab1.model.User;
 import main.lab1.repos.TaskRepository;
-import main.lab1.services.TaskServiceImpl;
+import main.lab1.services.NotificationService;
+import main.lab1.services.implementation.TaskServiceImpl;
 import main.lab1.services.UserService;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 //unit tests
 @ExtendWith(MockitoExtension.class)
@@ -33,71 +31,77 @@ public class TaskServiceTest {
     private TaskRepository taskRepository;
 
     @Mock
+    private NotificationService notificationService;
+
+    @Mock
     private KafkaTemplate<String, Object> kafkaTemplate;
 
     @InjectMocks
     private TaskServiceImpl taskService;
 
-    @Test
-    void createTask_WithNewTaskId_ShouldAddOneTask() {
-        long userId = 1;
-        User mockUser = new User(userId, "Alex", "alex@ex.com");
-        long taskId = 1;
-        Task newTask = new Task(taskId,userId,"Title","Description", ZonedDateTime.now().plusHours(1));
-        when(taskRepository.count()).thenReturn(0L);
-        long tasksCount = taskRepository.count();//0
+    private Task invalidTask;
+    private Task taskUser1;
+    private Task task2User1;
+    private Task taskUser2;
 
-        when(userService.getUserById(userId)).thenReturn(mockUser);
-        when(taskRepository.existsById(taskId)).thenReturn(false);
+    @BeforeEach
+    void setUp()
+    {
+        taskUser1 = new Task(1, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
+        task2User1 = new Task(2, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
+        taskUser2 = new Task(3, 2, "Title", "Description", ZonedDateTime.now().plusHours(3));
         //doNothing().when(kafkaTemplate).send("task-events",newTask);
-        assertDoesNotThrow(() -> taskService.createTask(newTask));
-        taskService.createTask(newTask);
-        when(taskRepository.count()).thenReturn(1L);
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(newTask));
-
-        assertDoesNotThrow(() -> taskService.getTaskById(newTask.getTaskId()));
-        assertEquals(tasksCount+1, taskRepository.count());
-        assertEquals(newTask, taskService.getTaskById(taskId));
+        invalidTask = new Task(-1, -1, "Title", "Description", ZonedDateTime.now().plusHours(3));
     }
     @Test
     void createTask_ForNonExistentUserId_ShouldThrowUserNotFoundException() {
-        int invalidUserId = -1;
-        Task invalidTask = new Task(1, invalidUserId, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        when(userService.getUserById(invalidUserId))
-                .thenThrow(new UserNotFoundException(invalidUserId));
+        long invalidUserId = invalidTask.getUserId();
+        when(userService.existsByUserId(invalidUserId)).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> taskService.createTask(invalidTask));
+        assertThrows(ResourceNotFoundException.class, () -> taskService.createTask(invalidTask));
+
+        verify(userService).existsByUserId(invalidUserId);
+        verify(taskRepository, never()).save(any(Task.class));
     }
+
     @Test
-    void createTask_WithExistingTaskId_ShouldThrowException() {
-        long userId = 1;
-        long taskId = 1;
-        when(taskRepository.existsById(taskId)).thenReturn(true);
-        Task taskWithExistingTaskId = new Task(taskId,userId,"Title","Description", ZonedDateTime.now().plusHours(3));
-        assertThrows(
-                TaskAlreadyExistsException.class,
-                () -> taskService.createTask(taskWithExistingTaskId)
-        );
+    void createTask_ForValidUser_ShouldAddTask()
+    {
+        when(userService.existsByUserId(taskUser1.getUserId())).thenReturn(true);
+        when(taskRepository.save(taskUser1)).thenReturn(taskUser1);
+
+        Task createdTask = taskService.createTask(taskUser1);
+
+        assertNotNull(createdTask);
+        assertEquals(taskUser1,createdTask);
+        verify(userService).existsByUserId(taskUser1.getUserId());
+        verify(taskRepository).save(any(Task.class));
+
     }
+
     @Test
     void getTask_WithExistingTaskId_ShouldReturnTask() {
 
-        long taskId = 1;
-        Task expectedTask = new Task(taskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(expectedTask));
+        long taskId = taskUser1.getTaskId();
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(taskUser1));
+
         Task actualTask = taskService.getTaskById(taskId);
-        assertEquals(expectedTask, actualTask);//ignore that we can throw an exception because this fails the test anyway
+
+        assertNotNull(actualTask);
+        assertEquals(taskUser1, actualTask);
+        verify(taskRepository).findById(taskId);
     }
     @Test
     void getTask_WithNonExistentId_ShouldThrowException() {
 
-        long invaldTaskId = 1;
-        //Task task = new Task(taskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
-        when(taskRepository.findById(invaldTaskId)).thenReturn(Optional.empty());
-        //taskService.createTask(task);
+        long invalidTaskId = invalidTask.getTaskId();
+
+        when(taskRepository.findById(invalidTaskId)).thenReturn(Optional.empty());
+
         assertThrows(
-                TaskNotFoundException.class, //what exception will be thrown
-                () ->taskService.getTaskById(invaldTaskId));
+                ResourceNotFoundException.class, //what exception will be thrown
+                () ->taskService.getTaskById(invalidTaskId));
+        verify(taskRepository).findById(invalidTaskId);
     }
 
 
@@ -105,71 +109,99 @@ public class TaskServiceTest {
     @Test
     void getAllTasks_WithNoTasks_ShouldReturnEmptyList(){
         when(taskRepository.findAll()).thenReturn(List.of());
+
         assertTrue(taskService.getAllTasks().isEmpty());
+        verify(taskRepository).findAll();
     }
 
     @Test
     void getAllTasks_WithMultipleTasks_ShouldReturnListOfAllTasks(){
-        long userId = 1;
-        Task task1 = new Task(1,userId,"Title","Description", ZonedDateTime.now().plusHours(3));
-        Task task2 = new Task(2,userId+1,"Title","Description", ZonedDateTime.now().plusDays(3).plusYears(1));
-        when(taskRepository.findAll()).thenReturn(List.of(task1,task2));
-        List<Task> tasks = taskService.getAllTasks();
-        assertAll(//assert there are exactly 2 tasks and both inserted are present
-                () -> assertEquals(2, tasks.size()),
-                () -> assertTrue(tasks.contains(task1)),
-                () -> assertTrue(tasks.contains(task2))
+
+        List<Task> expectedTasks = List.of(taskUser1, taskUser2, task2User1);
+        when(taskRepository.findAll()).thenReturn(expectedTasks);
+
+        List<Task> actualTasks = taskService.getAllTasks();
+        assertAll(
+                () -> assertEquals(3, actualTasks.size()),
+                () -> assertTrue(actualTasks.containsAll(expectedTasks)),
+                () -> assertTrue(expectedTasks.containsAll(actualTasks))
         );
+        verify(taskRepository).findAll();
     }
 
     @Test
     void getTasksByUserId_WithExistingUserId_ShouldReturnListOfAllUsersTasks() {
-        long userId = 1;
-        Task task1User1 = new Task(1,userId,"Title","Description", ZonedDateTime.now().plusHours(3));
-        Task task2User1 = new Task(2,userId,"Title1","Description1", ZonedDateTime.now().plusHours(4));
-        when(taskRepository.findByUserId(userId)).thenReturn(List.of(task1User1,task2User1));
+        long userId = taskUser1.getUserId();
+
+        when(taskRepository.findByUserIdAndIsCompletedFalse(userId)).thenReturn(List.of(taskUser1,task2User1));
 
         List<Task> userTasks = taskService.getTasksByUserId(userId);
         assertAll(
                 ()->assertEquals(2,userTasks.size()),
-                ()->assertTrue(userTasks.contains(task1User1)),
+                ()->assertTrue(userTasks.contains(taskUser1)),
                 ()->assertTrue(userTasks.contains(task2User1))
         );
+        verify(taskRepository).findByUserIdAndIsCompletedFalse(userId);
     }
 
     @Test
     void getTasksByUserId_WithNonExistentUserId_ShouldReturnEmptyList() {
-        long invalidUserId = -1;
-        when(taskRepository.findByUserId(invalidUserId)).thenReturn(List.of());
+        long invalidUserId = invalidTask.getUserId();
+        when(taskRepository.findByUserIdAndIsCompletedFalse(invalidUserId)).thenReturn(List.of());
+
         List<Task> userTasks = taskService.getTasksByUserId(invalidUserId);
+
         assertEquals(0,userTasks.size());
-
-    }
-    @Test
-    void deleteTaskById_WithExistingTaskId_ShouldRemoveTask() {
-        long userId = 1;
-        long taskId = 1;
-        Task taskId1User1 = new Task(taskId,userId ,"Title","Description", ZonedDateTime.now().plusHours(3));
-        Task taskId2User2 = new Task(taskId+1,userId ,"Title1","Description1", ZonedDateTime.now().plusHours(4));
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(taskId1User1));
-        Task deletedTask = taskService.deleteTaskById(taskId);
-        when(taskRepository.findAll()).thenReturn(List.of(taskId2User2));
-        List<Task> tasksWithoutFirstTask = taskService.getAllTasks();
-        assertAll(
-                ()->assertEquals(1,tasksWithoutFirstTask.size()),
-                ()->assertFalse(tasksWithoutFirstTask.contains(taskId1User1)),
-                ()->assertTrue(tasksWithoutFirstTask.contains(taskId2User2)),
-                ()->assertEquals(deletedTask,taskId1User1)
-                );
+        verify(taskRepository).findByUserIdAndIsCompletedFalse(invalidUserId);
     }
 
     @Test
-    void deleteTaskById_WithNonExistentTaskId_ShouldThrowException() {
-        long invalidTaskId = -1;
-        when(taskRepository.findById(invalidTaskId)).thenReturn(Optional.empty());
-        assertThrows(TaskNotFoundException.class,
-                ()->taskService.deleteTaskById(invalidTaskId));
+    void deleteTaskById_WithExistingTaskId_ShouldRemoveOneTask() {
 
+        long taskIdToDelete = taskUser1.getTaskId();
+        when(taskRepository.findById(taskIdToDelete)).thenReturn(Optional.of(taskUser1));
+        doNothing().when(taskRepository).deleteById(taskIdToDelete);
 
+        assertDoesNotThrow(()->taskService.deleteTaskById(taskIdToDelete));
+        when(taskRepository.findById(taskIdToDelete)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,()->taskService.getTaskById(taskIdToDelete));
+
+        verify(taskRepository).deleteById(taskIdToDelete);
     }
+
+    @Test
+    void deleteTaskById_WithNonExistentTaskId_ShouldThrow() {
+        long invalidTaskId = invalidTask.getTaskId();
+        assertThrows(ResourceNotFoundException.class, ()-> taskService.deleteTaskById(invalidTaskId));
+    }
+
+    @Test
+    void markAsCompleted_shouldSetCompletedAndSendNotification() {
+        Task task = new Task();
+        task.setTaskId(1L);
+        task.setUserId(100L);
+        task.setCompleted(false);
+
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
+
+        taskService.markAsCompleted(1L);
+
+        assertTrue(task.isCompleted());
+        verify(notificationService).createNotification(
+                argThat(notification ->
+                        notification.getUserId() == 100L &&
+                                notification.getTaskId() == 1L &&
+                                notification.getText().equals("Task completed!")
+                )
+        );
+    }
+    @Test
+    void markAsCompleted_shouldThrowWhenTaskNotFound() {
+        when(taskRepository.findById(42L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> taskService.markAsCompleted(42L));
+        verifyNoInteractions(notificationService);
+    }
+
 }

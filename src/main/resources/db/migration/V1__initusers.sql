@@ -1,8 +1,0 @@
-
-CREATE TABLE users
-(
-    user_id BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
-    name    VARCHAR(50) NOT NULL,
-    email   VARCHAR(50),
-    CONSTRAINT pk_users PRIMARY KEY (user_id)
-);

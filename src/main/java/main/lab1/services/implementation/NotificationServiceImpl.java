@@ -1,48 +1,42 @@
-package main.lab1.services;
+package main.lab1.services.implementation;
 
 import main.lab1.model.Notification;
 import main.lab1.model.Task;
 import main.lab1.repos.NotificationRepository;
+import main.lab1.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
-    //private final List<Notification> notifications = new ArrayList<>();
 
     final private NotificationRepository notificationRepository;
 
-    private final TaskService taskService;
-
-    private final UserService userService;
-
-    public NotificationServiceImpl(NotificationRepository notificationRepository, TaskService taskService, UserService userService) {
+    public NotificationServiceImpl(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
-        this.taskService = taskService;
-        this.userService = userService;
     }
 
-
+    @Transactional(readOnly = true)
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Notification> getNotificationsByUserId(long userId) {
-        userService.getUserById(userId);
         return notificationRepository.findByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
     public List<Notification> getNotificationsByTaskId(long taskId) {
-        taskService.getTaskById(taskId);
         return notificationRepository.findByTaskId(taskId);
     }
-/* //
-    public Notification createNotification(Notification notification) { //remove after adding kafka?
-        userService.getUserById(notification.getUserId());
-        taskService.getTaskById(notification.getTaskId());
+
+    @Transactional
+    public Notification createNotification(Notification notification) {
         return notificationRepository.save(notification);
     }
 
