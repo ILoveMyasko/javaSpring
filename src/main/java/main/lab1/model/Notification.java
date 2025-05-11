@@ -2,10 +2,9 @@ package main.lab1.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -15,16 +14,25 @@ import java.time.LocalDateTime;
 @Table(name = "notifications")
 public class Notification {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long notificationId;
-    @Positive @NotNull
+    Long notificationId;
+    @Positive @Column(nullable = false)
     long userId;
-    @Positive @NotNull
+    @Positive @Column(nullable = false)
     long taskId;
-    @NotEmpty String text;
-    final LocalDateTime createdAt = LocalDateTime.now();
+    @NotEmpty @Column(length = 512)
+    String text;
+    @Setter(AccessLevel.NONE) @Column(nullable = false)
+    ZonedDateTime createdAt = ZonedDateTime.now();
+
+    @PrePersist
+    private void onCreate(){
+        this.createdAt = ZonedDateTime.now();
+    }
+
     public Notification(long userId, long taskId, String message) {
         this.userId = userId;
         this.taskId = taskId;
         this.text = message;
+        this.createdAt = ZonedDateTime.now();
     }
 }

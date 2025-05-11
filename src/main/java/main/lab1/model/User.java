@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.time.ZonedDateTime;
+
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
@@ -16,10 +18,26 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table(name = "users")
 public class User {
     @Id @GeneratedValue(strategy = IDENTITY)
-    @Column
-    private long userId;
-    @Column (nullable = false, length = 50)
-    private @NotBlank String name;
-    @Column (length = 50)
-    private @Email String email;
+    private Long userId;
+    @NotBlank @Column (nullable = false, length = 50)
+    private String name;
+    @Email @Column (length = 50)
+    private String email;
+    @Setter(AccessLevel.NONE) @Column(nullable = false)
+    private ZonedDateTime registrationTime;
+
+    @PrePersist
+    private void onCreate(){
+        this.registrationTime = ZonedDateTime.now();
+    }
+
+    public User(long userId,String name, String email)
+    {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.registrationTime = ZonedDateTime.now();
+    }
+
+
 }

@@ -18,14 +18,25 @@ import java.time.ZonedDateTime;
 public class Task {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long taskId;
-    @Positive @NotNull
-    long userId; // do I want to check it through autowiring services? or do I migrate all checks to db and make foreign keys
-    @NotEmpty @Column(length = 100) String taskTitle;
-    @NotEmpty @Column(length = 255) String taskDescription;
-    final ZonedDateTime createdAt = ZonedDateTime.now(); // do I want to remove default now? since postgres can autogen it
-    ZonedDateTime expiresAt;
-    boolean isCompleted = false;
+    private Long taskId;
+    @Positive @Column(nullable = false)
+    private long userId;
+    @NotEmpty @Column(length = 100)
+    private String taskTitle;
+    @NotEmpty @Column(length = 1000)
+    private String taskDescription;
+    @Setter(AccessLevel.NONE) @Column(nullable = false)
+    private ZonedDateTime createdAt; // do I want to remove default now? since postgres can do it
+    @Column(nullable = false)
+    private ZonedDateTime expiresAt;
+    @Column(nullable = false)
+    private boolean isCompleted;
+
+    @PrePersist
+    private void onCreate(){
+        this.createdAt = ZonedDateTime.now();
+        this.isCompleted = false;
+    }
 
     @AssertTrue(message = "expiresAt must be after createdAt")
     private boolean isExpiresAtValid() {
@@ -38,7 +49,7 @@ public class Task {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.expiresAt = expiresAt;
-        // createdAt = .now default
-        // isCompleted = false default
+        this.createdAt = ZonedDateTime.now();
+        this.isCompleted = false;
     }
 }
