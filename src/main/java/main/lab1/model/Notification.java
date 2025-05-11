@@ -3,30 +3,43 @@ package main.lab1.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import lombok.*;
 
-@Data
+import java.time.ZonedDateTime;
 
-@NoArgsConstructor //mandatory for SpringJPA
+@Getter
+@Setter
 @Entity
-
-
 @Table(name = "notifications")
 public class Notification {
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long notificationId;
-    private @Positive long userId;
-    private @Positive long taskId;
-    private @NotEmpty @Column(length = 255) String text; //255 is default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long notificationId;
+    @Positive @Column(nullable = false)
+    private long userId;
+    @Positive @Column(nullable = false)
+    private Long taskId;
+    @NotEmpty @Column(length = 1000)
+    private String text;
+    @Setter(AccessLevel.NONE) @Column(nullable = false)
+    private ZonedDateTime createdAt;
 
-    public Notification(long notificationId, long userId, long taskId, String text) {
-        this.notificationId =notificationId;
+
+    public Notification(){
+        this.createdAt = ZonedDateTime.now();
+    }
+
+    public Notification( long userId, long taskId, String message) {
         this.userId = userId;
         this.taskId = taskId;
-        this.text = text;
-        // createdAt = .now default
+        this.text = message;
+        this.createdAt = ZonedDateTime.now();
+    }
+
+    public Notification(long notificationId,  long userId, long taskId, String message) {
+        this.notificationId = notificationId;
+        this.userId = userId;
+        this.taskId = taskId;
+        this.text = message;
+        this.createdAt = ZonedDateTime.now();
     }
 }

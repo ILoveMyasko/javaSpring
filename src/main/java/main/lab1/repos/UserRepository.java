@@ -1,7 +1,19 @@
 package main.lab1.repos;
 
 import main.lab1.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User,Long> {
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface UserRepository {
+
+    boolean existsById (long id);
+    boolean existsByEmail (String email);
+    User save (User newUser);
+    Optional<User> findById(long id);
+    List<User> findAll();
+
+
 }

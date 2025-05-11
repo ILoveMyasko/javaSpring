@@ -1,18 +1,19 @@
 
 services:
   app:
-    build: .
-    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
-      #jdbc:postgresql://[host]:[port]/[database_name? not really]
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_DATA_REDIS_HOST: redis-cache # caching stuff
-      SPRING_DATA_REDIS_PORT: 6379
-      SPRING_CACHE_REDIS_TIME-TO-LIVE: 60000
+      - SPRING_PROFILES_ACTIVE =postgres
+      - SPRING_DATASOURCE_URL =jdbc:postgresql://postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME =postgres
+      - SPRING_DATASOURCE_PASSWORD =postgres
+      - SPRING_DATA_REDIS_HOST =redis-cache # caching stuff
+      - SPRING_DATA_REDIS_PORT =6379
+      - SPRING_CACHE_REDIS_TIME-TO-LIVE =60000
     depends_on:
       - postgres
       - redis-cache
@@ -23,9 +24,9 @@ services:
     ports:
       - "5432:5432" #<-base postgres port
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      - POSTGRES_USER =postgres
+      - POSTGRES_PASSWORD =postgres
+      - POSTGRES_DB =postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data #why?
 
