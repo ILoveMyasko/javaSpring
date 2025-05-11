@@ -8,6 +8,10 @@ import main.lab1.repos.TaskRepository;
 import main.lab1.services.NotificationService;
 import main.lab1.services.TaskService;
 import main.lab1.services.UserService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +35,17 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "tasks", key = "#id")
     public Task getTaskById(long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
     }
 
     @Transactional
+    @Caching(
+            put = @CachePut(value = "tasks", key = "#result.taskId"),
+            evict = @CacheEvict(value = "userTasks", key = "#newTask.userId") //force cache clear to avoid outdated data retrieval
+    )
     public Task createTask(Task newTask) {
         if (!userService.existsByUserId(newTask.getUserId()))
         {
@@ -54,29 +63,38 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Transactional
-    public void deleteTaskById(long id) {
-        Optional<Task> taskOptional = taskRepository.findById(id);
-        if (taskOptional.isPresent()) {
-            Task taskToDelete = taskOptional.get();
-            taskRepository.deleteById(taskToDelete.getTaskId());
-        }
-        else throw new ResourceNotFoundException("Task with id " + id + " not found");
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "tasks", key = "#id"),
+                    @CacheEvict(value = "userTasks", key = "#result.userId")
+            })
+    public Task deleteTaskById(long id) {
+        Task taskToDelete = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
+        taskRepository.deleteById(id);
+        return taskToDelete;
     }
 
     @Transactional
-    public void markAsCompleted(long id)
+    @Caching(
+            put = {
+                    @CachePut(value = "tasks", key = "#result.taskId")
+            },
+            evict = {
+                    @CacheEvict(value = "userTasks", key = "#result.userId")
+            })
+    public Task markAsCompleted(long id)
     {
-        Optional<Task> taskOptional = taskRepository.findById(id);
-        if (taskOptional.isPresent()) {
-            Task taskToMarkCompleted = taskOptional.get();
-            taskToMarkCompleted.setCompleted(true);
-            notificationService.createNotification(
-                    new Notification(taskToMarkCompleted.getUserId(), taskToMarkCompleted.getTaskId(), "Task completed!"));
-        }
-        else throw new ResourceNotFoundException("Task with id " + id + " not found");
+        Task taskToUpdate = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
+        taskToUpdate.setCompleted(true);
+        notificationService.createNotification(
+                new Notification(taskToUpdate.getUserId(), taskToUpdate.getTaskId(), "Task completed!"));
+        return taskToUpdate;
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "userTasks", key = "#id")
     public List<Task> getTasksByUserId(long id) {
         return taskRepository.findByUserIdAndIsCompletedFalse(id);
     }
