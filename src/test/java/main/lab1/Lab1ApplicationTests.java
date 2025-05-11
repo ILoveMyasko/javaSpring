@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 
 @SpringBootTest
-@ActiveProfiles("h2")
+@ActiveProfiles("internal")
 class Lab1ApplicationTests {
 	@Test
 	void contextLoads()  throws Exception{
