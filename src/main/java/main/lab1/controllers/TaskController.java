@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -21,17 +23,17 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks(){
-        return ResponseEntity.ok(taskService.getAllTasks());
+        return ok(taskService.getAllTasks());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable("id") long uId){
-        return ResponseEntity.ok(taskService.getTaskById(uId));
+        return ok(taskService.getTaskById(uId));
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<List<Task>> getAllTasksByUserId(@PathVariable("id") long uId){
-        return ResponseEntity.ok(taskService.getTasksByUserId(uId));
+        return ok(taskService.getTasksByUserId(uId));
     }
 
     @PostMapping
@@ -40,8 +42,8 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable("id") long tId){
-        taskService.deleteTaskById(tId);
+    public ResponseEntity<Task> deleteTask(@PathVariable("id") long tId){ //okay lets return deleted
+        return ok(taskService.deleteTaskById(tId));
     }
 
     @PatchMapping("/complete/{id}")

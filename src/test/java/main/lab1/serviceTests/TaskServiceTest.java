@@ -81,7 +81,7 @@ public class TaskServiceTest {
 
         long taskId = taskUser1.getTaskId();
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(taskUser1));
-        
+
         Task actualTask = taskService.getTaskById(taskId);
 
         assertNotNull(actualTask);

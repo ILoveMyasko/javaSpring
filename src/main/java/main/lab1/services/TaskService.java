@@ -14,9 +14,9 @@ public interface TaskService {
 
     List<Task> getAllTasks();
 
-    void deleteTaskById(long id);
+    Task deleteTaskById(long id);
 
     List<Task> getTasksByUserId(long id);
 
-    void markAsCompleted(long id);
+    Task markAsCompleted(long id);
 }

@@ -173,8 +173,8 @@ public class TaskControllerTest {
         long taskId = 1;
         Task task = new Task(taskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
 
-        doNothing().when(taskService).deleteTaskById(taskId);
-
+       // doNothing().when(taskService).deleteTaskById(taskId);
+        when(taskService.deleteTaskById(taskId)).thenReturn(task);
         assertDoesNotThrow(
                 ()->taskController.deleteTask(taskId)
         );

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 
@@ -13,7 +14,7 @@ import java.time.ZonedDateTime;
 @Setter
 @Entity //mandatory for SpringJPA
 @Table(name = "tasks")
-public class Task {
+public class Task implements Serializable  { //serializable simple but not the best solution?
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
