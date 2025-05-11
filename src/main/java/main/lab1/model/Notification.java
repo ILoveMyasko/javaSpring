@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+
 import java.time.ZonedDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor //mandatory for SpringJPA
-@AllArgsConstructor
 @Entity
 @Table(name = "notifications")
 public class Notification {
@@ -19,13 +18,13 @@ public class Notification {
     long userId;
     @Positive @Column(nullable = false)
     long taskId;
-    @NotEmpty @Column(length = 512)
+    @NotEmpty @Column(length = 1000)
     String text;
     @Setter(AccessLevel.NONE) @Column(nullable = false)
     ZonedDateTime createdAt = ZonedDateTime.now();
 
-    @PrePersist
-    private void onCreate(){
+
+    private Notification(){
         this.createdAt = ZonedDateTime.now();
     }
 
