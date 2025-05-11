@@ -13,22 +13,30 @@ import java.time.ZonedDateTime;
 @Table(name = "notifications")
 public class Notification {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long notificationId;
+    private Long notificationId;
     @Positive @Column(nullable = false)
-    long userId;
+    private long userId;
     @Positive @Column(nullable = false)
-    long taskId;
+    private Long taskId;
     @NotEmpty @Column(length = 1000)
-    String text;
+    private String text;
     @Setter(AccessLevel.NONE) @Column(nullable = false)
-    ZonedDateTime createdAt = ZonedDateTime.now();
+    private ZonedDateTime createdAt;
 
 
-    private Notification(){
+    public Notification(){
         this.createdAt = ZonedDateTime.now();
     }
 
-    public Notification(long userId, long taskId, String message) {
+    public Notification( long userId, long taskId, String message) {
+        this.userId = userId;
+        this.taskId = taskId;
+        this.text = message;
+        this.createdAt = ZonedDateTime.now();
+    }
+
+    public Notification(long notificationId,  long userId, long taskId, String message) {
+        this.notificationId = notificationId;
         this.userId = userId;
         this.taskId = taskId;
         this.text = message;
