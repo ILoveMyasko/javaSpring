@@ -59,6 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
                 notification.setUserId(event.userId());
                 notification.setText("Task " + event.taskId()+" completed");
                 this.createNotification(notification);
+                break;
             }
             case DELETE: {
                 break;
