@@ -1,6 +1,8 @@
 package main.lab1.serviceTests;
 
 import main.lab1.exceptions.ResourceNotFoundException;
+import main.lab1.kafkaEvents.TaskEvent;
+import main.lab1.kafkaEvents.TaskEventTypeEnum;
 import main.lab1.model.Task;
 import main.lab1.repos.TaskRepository;
 import main.lab1.services.NotificationService;
@@ -10,14 +12,18 @@ import main.lab1.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -188,13 +194,14 @@ public class TaskServiceTest {
         taskService.markAsCompleted(1L);
 
         assertTrue(task.isCompleted());
-        verify(notificationService).createNotification(
-                argThat(notification ->
-                        notification.getUserId() == 100L &&
-                                notification.getTaskId() == 1L &&
-                                notification.getText().equals("Task completed!")
-                )
-        );
+
+        ArgumentCaptor<TaskEvent> captor = ArgumentCaptor.forClass(TaskEvent.class);
+        verify(kafkaTemplate).send(eq("task-events"), captor.capture());
+        TaskEvent sentEvent = captor.getValue();
+        assertEquals(TaskEventTypeEnum.UPDATE, sentEvent.eventType());
+        assertEquals(1L, sentEvent.taskId());
+        assertEquals(100L, sentEvent.userId());
+
     }
     @Test
     void markAsCompleted_shouldThrowWhenTaskNotFound() {

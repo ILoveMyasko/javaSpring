@@ -42,21 +42,21 @@ public class UserServiceTest {
 
     @Test
     void createUser_WithNewId_ShouldAddUser() {
-        when(userRepository.existsByEmail(userToSave.getEmail())).thenReturn(false);
+        when(userRepository.existsByEmailIgnoreCase(userToSave.getEmail())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(userToSave);
 
         User savedUser = userService.createUser(userToSave);
 
         assertNotNull(savedUser);
         assertEquals(userToSave,savedUser);
-        verify(userRepository).existsByEmail(savedUser.getEmail());
+        verify(userRepository).existsByEmailIgnoreCase(savedUser.getEmail());
         verify(userRepository).save(savedUser);
     }
 
     @Test
     void createUser_WithExistingEmail_ShouldThrow()
     {
-        when(userRepository.existsByEmail(userToSave.getEmail())).thenReturn(true);
+        when(userRepository.existsByEmailIgnoreCase(userToSave.getEmail())).thenReturn(true);
 
         assertThrows(DuplicateResourceException.class,
                 ()->userService.createUser(userToSave));
