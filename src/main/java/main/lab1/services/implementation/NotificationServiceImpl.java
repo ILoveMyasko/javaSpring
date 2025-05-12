@@ -1,5 +1,6 @@
 package main.lab1.services.implementation;
 
+import main.lab1.kafkaEvents.TaskEvent;
 import main.lab1.model.Notification;
 import main.lab1.model.Task;
 import main.lab1.repos.NotificationRepository;
@@ -40,14 +41,32 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.save(notification);
     }
 
- */
     //now we have this async handler instead of manual task creations
     @KafkaListener(topics = "task-events")
-    public void handleTaskEvent(Task event) {
-        Notification notification = new Notification(); // deepseek says notificationId will be fine
-        notification.setTaskId(event.getTaskId());
-        notification.setUserId(event.getUserId());
-        notification.setText("Task " + event.getTaskId()+" created");
-        notificationRepository.save(notification);
+    public void handleTaskEvent(TaskEvent event) {
+        switch (event.eventType()){
+            case CREATE: {
+                Notification notification = new Notification(); // deepseek says notificationId will be fine
+                notification.setTaskId(event.taskId());
+                notification.setUserId(event.userId());
+                notification.setText("Task " + event.taskId()+" created");
+                this.createNotification(notification);
+                break;
+            }
+            case UPDATE: {
+                Notification notification = new Notification();
+                notification.setTaskId(event.taskId());
+                notification.setUserId(event.userId());
+                notification.setText("Task " + event.taskId()+" completed");
+                this.createNotification(notification);
+            }
+            case DELETE: {
+                break;
+            }
+            default: {
+                System.out.println("No actions implemented for event type: " + event.eventType());
+            }
+        }
+
     }
 }
