@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -53,10 +54,10 @@ public class TaskServiceTest {
     @BeforeEach
     void setUp()
     {
+        ReflectionTestUtils.setField(taskService, "taskEventTopic", "${kafka.topic.task-event}");
         taskUser1 = new Task(1, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
         task2User1 = new Task(2, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
         taskUser2 = new Task(3, 2, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        //doNothing().when(kafkaTemplate).send("task-events",newTask);
         invalidTask = new Task(-1, -1, "Title", "Description", ZonedDateTime.now().plusHours(3));
     }
     @Test
@@ -196,7 +197,7 @@ public class TaskServiceTest {
         assertTrue(task.isCompleted());
 
         ArgumentCaptor<TaskEvent> captor = ArgumentCaptor.forClass(TaskEvent.class);
-        verify(kafkaTemplate).send(eq("task-events"), captor.capture());
+        verify(kafkaTemplate).send(eq("${kafka.topic.task-event}"), captor.capture());
         TaskEvent sentEvent = captor.getValue();
         assertEquals(TaskEventTypeEnum.UPDATE, sentEvent.eventType());
         assertEquals(1L, sentEvent.taskId());
