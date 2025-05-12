@@ -42,6 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     //now we have this async handler instead of manual task creations
+    @Transactional
     @KafkaListener(topics = "task-events")
     public void handleTaskEvent(TaskEvent event) {
         switch (event.eventType()){
