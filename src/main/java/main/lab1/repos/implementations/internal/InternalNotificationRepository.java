@@ -40,4 +40,9 @@ public class InternalNotificationRepository implements NotificationRepository {
         notifications.add(newNotification);
         return newNotification;
     }
+
+    @Override
+    public void deleteByTaskId(long id) {
+        notifications.removeIf(notification -> notification.getTaskId() == id);
+    }
 }
