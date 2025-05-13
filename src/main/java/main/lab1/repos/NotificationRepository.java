@@ -1,16 +1,15 @@
 package main.lab1.repos;
 
-import jakarta.transaction.Transactional;
 import main.lab1.model.Notification;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface NotificationRepository  extends JpaRepository<Notification,Long> {
-    List<Notification> findByUserId(Long userId);
-    List<Notification> findByTaskId(Long taskId);
+@Repository
+public interface NotificationRepository {
 
-   // @Transactional
-    void deleteByTaskId(Long taskId);
+    List<Notification> findAll();
+    List<Notification> findByUserId(long id);
+    List<Notification> findByTaskId(long id);
+    Notification save(Notification newNotification);
 }

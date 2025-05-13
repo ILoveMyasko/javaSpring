@@ -5,3 +5,4 @@ package main.lab1.kafkaEvents;
             Long taskId,
             Long userId
     ) {}
+

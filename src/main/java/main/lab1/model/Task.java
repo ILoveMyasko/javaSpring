@@ -4,28 +4,37 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-@Data
-@EqualsAndHashCode
-@Entity
-@NoArgsConstructor //mandatory for SpringJPA
+
+@Getter
+@Setter
+@Entity //mandatory for SpringJPA
 @Table(name = "tasks")
 public class Task implements Serializable  { //serializable simple but not the best solution?
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long taskId;
-    @Positive long userId; // do I want to check it through autowiring services? or do I migrate all checks to db and make foreign keys
-    @NotEmpty @Column(length = 100) String taskTitle;
-    @NotEmpty @Column(length = 255) String taskDescription;
-    final ZonedDateTime createdAt = ZonedDateTime.now(); // do I want to remove default now? since postgres can autogen it
-    ZonedDateTime expiresAt;
-    boolean isCompleted = false;
+    private Long taskId;
+    @Positive @Column(nullable = false)
+    private long userId;
+    @NotEmpty @Column(nullable = false, length = 100)
+    private String taskTitle;
+    @Column(length = 1000)
+    private String taskDescription;
+    @Setter(AccessLevel.NONE) @Column(nullable = false)
+    private ZonedDateTime createdAt; // do I want to remove default now? since postgres can do it
+    @Column(nullable = false)
+    private ZonedDateTime expiresAt;
+    @Column(nullable = false)
+    private boolean isCompleted;
+
+    public Task(){
+        this.createdAt = ZonedDateTime.now();
+        this.isCompleted = false;
+    }
 
     @AssertTrue(message = "expiresAt must be after createdAt")
     private boolean isExpiresAtValid() {
@@ -38,7 +47,7 @@ public class Task implements Serializable  { //serializable simple but not the b
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.expiresAt = expiresAt;
-        // createdAt = .now default
-        // isCompleted = false default
+        this.createdAt = ZonedDateTime.now();
+        this.isCompleted = false;
     }
 }

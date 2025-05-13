@@ -13,4 +13,5 @@ public interface UserService {
 
     List<User> getAllUsers();
 
+    boolean existsByUserId ( long id);
 }

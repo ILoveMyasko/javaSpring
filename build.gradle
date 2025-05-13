@@ -33,14 +33,12 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	//runtimeOnly 'org.springframework.boot:spring-boot-docker-compose' //it autoruns compose when i build? can be useful for booting postgres with the app?
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
-	//flyway db migrations
+	runtimeOnly 'com.h2database:h2:2.2.224'
 	implementation 'org.flywaydb:flyway-core' //flyway migrate
 	implementation 'org.flywaydb:flyway-database-postgresql'
-	//postgres
 	runtimeOnly 'org.postgresql:postgresql'
 
 	//kafka

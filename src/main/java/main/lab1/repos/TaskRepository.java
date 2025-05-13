@@ -1,17 +1,20 @@
 package main.lab1.repos;
 
 import main.lab1.model.Task;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-//@Repository?
-public interface TaskRepository extends JpaRepository<Task,Long> {
-    List<Task> findByUserId(Long userId);
+import java.util.Optional;
 
-    @Query("SELECT t FROM Task t WHERE t.expiresAt < :now AND t.isCompleted = false") //sql injection impenetrable
-    List<Task> findByDueDateBeforeAndCompletedFalse(@Param("now") ZonedDateTime now);
+@Repository
+public interface TaskRepository {
 
+    boolean existsById (long id);
+    Task save (Task newTask);
+
+    Optional<Task> findById(long id);
+    List<Task> findAll();
+    List<Task> findByUserId(long id);
+    List<Task> findByUserIdAndIsCompletedFalse(long id);
+    void deleteById(long id);
 }
