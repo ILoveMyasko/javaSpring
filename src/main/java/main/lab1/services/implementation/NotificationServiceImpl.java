@@ -47,7 +47,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void handleTaskEvent(TaskEvent event) {
         switch (event.eventType()){
             case CREATE: {
-                Notification notification = new Notification(); // deepseek says notificationId will be fine
+                Notification notification = new Notification();
                 notification.setTaskId(event.taskId());
                 notification.setUserId(event.userId());
                 notification.setText("Task " + event.taskId()+" created");
@@ -60,9 +60,6 @@ public class NotificationServiceImpl implements NotificationService {
                 notification.setUserId(event.userId());
                 notification.setText("Task " + event.taskId()+" completed");
                 this.createNotification(notification);
-                break;
-            }
-            case DELETE: {
                 break;
             }
             default: {
