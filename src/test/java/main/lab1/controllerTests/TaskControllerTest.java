@@ -1,6 +1,7 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.TaskController;
+import main.lab1.exceptions.ExternalServiceUnavailableException;
 import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
 import main.lab1.exceptions.DuplicateResourceException;
@@ -13,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.ZonedDateTime;
@@ -198,7 +201,8 @@ public class TaskControllerTest {
     @Test
     void handleDuplicateResourceException_ReturnsConflictStatus() {
         long duplicateTaskId = 1;
-        DuplicateResourceException ex = new DuplicateResourceException("Task with id " + duplicateTaskId +" already exists");
+        DuplicateResourceException ex =
+                new DuplicateResourceException("Task with id " + duplicateTaskId +" already exists");
         ResponseEntity<String> response = taskController.handleDuplicateResourceException(ex);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
@@ -210,4 +214,13 @@ public class TaskControllerTest {
         ResponseEntity<String> response = taskController.handleResourceNotFoundException(ex);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
+
+    @Test
+    void handleServiceUnavailableException_ReturnsServiceUnavailableStatus() {
+        ExternalServiceUnavailableException ex =
+                new ExternalServiceUnavailableException("Message", new Throwable());
+        ResponseEntity<String> response = taskController.handleExternalServiceUnavailableException(ex);
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.getStatusCode());
+    }
+
 }

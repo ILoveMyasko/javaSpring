@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InternalTaskRepositoryTest {
     private InternalTaskRepository repository;
@@ -97,4 +97,28 @@ public class InternalTaskRepositoryTest {
         assertThat(repository.existsById(1L)).isFalse();
         assertThat(repository.findById(1L)).isEmpty();
     }
+
+    @Test
+    void findByUserIdAndIsCompletedFalse_ShouldReturnOnlyWithCompletedFalse()
+    {
+        Task task1 = new Task(); //id = 1
+        task1.setUserId(100L);
+        Task task2 = new Task(); //id = 2
+        task2.setUserId(200L);
+        Task task3 = new Task(); //id = 3
+        task3.setUserId(100L);
+        task3.setCompleted(true);
+
+        repository.save(task1);
+        repository.save(task2);
+        repository.save(task3);
+
+        List<Task> retrievedTasks = repository.findByUserIdAndIsCompletedFalse(100L);
+
+        assertEquals(1, retrievedTasks.size());
+        assertTrue(retrievedTasks.contains(task1));
+    }
+
+
 }
+//  findByIsCompletedTrueAndExpiresAtAfter
