@@ -36,7 +36,7 @@ public class UserControllerTest {
     @Test
     void getAllUsers_WithNoUsers_ReturnsEmptyList() {
         when(userService.getAllUsers()).thenReturn(Collections.emptyList());
-        ResponseEntity<List<User>> response = userController.getAllUsers(); // this will return what we mocked (previous command)
+        ResponseEntity<List<User>> response = userController.getAllUsers();
 
         assertThat(response.getBody())
                 .isNotNull()
@@ -53,7 +53,7 @@ public class UserControllerTest {
                 new User(2, "Alice", "komondor25@gmail.com")
         );
         when(userService.getAllUsers()).thenReturn(mockUsers);
-        ResponseEntity<List<User>> response = userController.getAllUsers(); // this will return what we mocked (previous command)
+        ResponseEntity<List<User>> response = userController.getAllUsers();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertThat(response.getBody())
@@ -116,7 +116,8 @@ public class UserControllerTest {
     @Test
     void handleDuplicateResourceException_ReturnsConflictStatus() {
         int duplicateUserId = 1;
-        DuplicateResourceException ex = new DuplicateResourceException("User with id " + duplicateUserId +" already exists");
+        DuplicateResourceException ex =
+                new DuplicateResourceException("User with id " + duplicateUserId +" already exists");
         ResponseEntity<String> response = userController.handleDuplicateResourceException(ex);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -125,7 +126,8 @@ public class UserControllerTest {
     @Test
     void handleUserNotFoundException_ReturnsNotFoundStatus() {
         int nonExistentUserId = 1;
-        ResourceNotFoundException ex = new ResourceNotFoundException("User with id" + nonExistentUserId + " not found");
+        ResourceNotFoundException ex =
+                new ResourceNotFoundException("User with id" + nonExistentUserId + " not found");
         ResponseEntity<String> response = userController.handleResourceNotFoundException(ex);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

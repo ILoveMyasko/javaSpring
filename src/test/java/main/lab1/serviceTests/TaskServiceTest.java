@@ -58,10 +58,14 @@ public class TaskServiceTest {
     void setUp()
     {
         ReflectionTestUtils.setField(taskService, "taskEventTopic", "${kafka.topic.task-event}");
-        taskUser1 = new Task(1, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        task2User1 = new Task(2, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        taskUser2 = new Task(3, 2, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        invalidTask = new Task(-1, -1, "Title", "Description", ZonedDateTime.now().plusHours(3));
+        taskUser1 = new Task(1, 1,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
+        task2User1 = new Task(2, 1,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
+        taskUser2 = new Task(3, 2,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
+        invalidTask = new Task(-1, -1,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
     }
     @Test
     void createTask_ForNonExistentUserId_ShouldThrowUserNotFoundException() {

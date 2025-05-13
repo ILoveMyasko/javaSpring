@@ -65,7 +65,8 @@ public class NotificationServiceTest {
     @Test
     void getNotificationByUserId_WithExistingUserId_ShouldReturnListOfUsersNotifications() {
 
-        when(notificationRepository.findByUserId(1L)).thenReturn(List.of(notificationUser1Task1,notificationUser1Task2));
+        when(notificationRepository.findByUserId(1L)).thenReturn(List.of
+                (notificationUser1Task1,notificationUser1Task2));
 
         List<Notification> userNotifications = notificationService.getNotificationsByUserId(1L);
 
@@ -96,7 +97,8 @@ public class NotificationServiceTest {
     @Test
     void getAllNotifications_WithMultipleNotificationsWithDifferentUserAndTaskIds_ShouldReturnAllNotifications(){
 
-        when(notificationRepository.findAll()).thenReturn(List.of(notificationUser1Task1,notificationUser1Task2,notificationUser2Task1));
+        when(notificationRepository.findAll()).thenReturn(List.of
+                (notificationUser1Task1,notificationUser1Task2,notificationUser2Task1));
         List<Notification> userNotifications = notificationService.getAllNotifications();
 
         assertAll(
