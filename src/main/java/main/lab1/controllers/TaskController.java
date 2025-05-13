@@ -1,6 +1,7 @@
 package main.lab1.controllers;
 import jakarta.validation.Valid;
 import main.lab1.exceptions.DuplicateResourceException;
+import main.lab1.exceptions.ExternalServiceUnavailableException;
 import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
 import main.lab1.services.TaskService;
@@ -47,9 +48,8 @@ public class TaskController {
     }
 
     @PatchMapping("/complete/{id}")
-    public ResponseEntity<Void> markAsCompleted(@PathVariable long id) {
-        taskService.markAsCompleted(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Task> markAsCompleted(@PathVariable long id) {
+        return ResponseEntity.ok(taskService.markAsCompleted(id));
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
@@ -60,6 +60,11 @@ public class TaskController {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ExternalServiceUnavailableException.class)
+    public ResponseEntity<String> handleExternalServiceUnavailableException(ExternalServiceUnavailableException e) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(e.getMessage() + e.getCause());
     }
 
 }

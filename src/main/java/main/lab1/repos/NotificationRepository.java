@@ -12,4 +12,5 @@ public interface NotificationRepository {
     List<Notification> findByUserId(long id);
     List<Notification> findByTaskId(long id);
     Notification save(Notification newNotification);
+    void deleteByTaskId(long id);
 }

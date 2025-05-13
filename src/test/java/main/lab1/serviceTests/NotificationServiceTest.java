@@ -27,10 +27,6 @@ public class NotificationServiceTest {
     @InjectMocks
     private NotificationServiceImpl notificationService;
 
-    private NotificationServiceImpl spyService;
-
-    @Captor
-    private ArgumentCaptor<Notification> notificationCaptor;
 
     private Notification notificationToSave;
     private Notification notificationUser1Task1;
@@ -40,7 +36,6 @@ public class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        spyService = Mockito.spy(notificationService);
         notificationToSave = new Notification(1,1,1,"Just Notification");
         notificationUser1Task1 = new Notification(1,1,1,"Notification User1Task1");
         notificationUser1Task2 = new Notification(2,1,2,"Notification User1Task2");
@@ -70,7 +65,8 @@ public class NotificationServiceTest {
     @Test
     void getNotificationByUserId_WithExistingUserId_ShouldReturnListOfUsersNotifications() {
 
-        when(notificationRepository.findByUserId(1L)).thenReturn(List.of(notificationUser1Task1,notificationUser1Task2));
+        when(notificationRepository.findByUserId(1L)).thenReturn(List.of
+                (notificationUser1Task1,notificationUser1Task2));
 
         List<Notification> userNotifications = notificationService.getNotificationsByUserId(1L);
 
@@ -101,7 +97,8 @@ public class NotificationServiceTest {
     @Test
     void getAllNotifications_WithMultipleNotificationsWithDifferentUserAndTaskIds_ShouldReturnAllNotifications(){
 
-        when(notificationRepository.findAll()).thenReturn(List.of(notificationUser1Task1,notificationUser1Task2,notificationUser2Task1));
+        when(notificationRepository.findAll()).thenReturn(List.of
+                (notificationUser1Task1,notificationUser1Task2,notificationUser2Task1));
         List<Notification> userNotifications = notificationService.getAllNotifications();
 
         assertAll(
@@ -140,27 +137,27 @@ public class NotificationServiceTest {
     void handleTaskEvent_create_shouldCallCreateNotificationWithCorrectData() {
         TaskEvent createEvent = new TaskEvent(TaskEventTypeEnum.CREATE, 42L, 7L);
 
-        spyService.handleTaskEvent(createEvent);
+        notificationService.handleTaskEvent(createEvent);
 
-        verify(spyService, times(1))
-                .createNotification(notificationCaptor.capture());
+        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationRepository, times(1)).save(captor.capture());
 
-        Notification n = notificationCaptor.getValue();
-        assertEquals(42L, n.getTaskId());
-        assertEquals(7L,  n.getUserId());
-        assertEquals("Task 42 created", n.getText());
+        Notification savedNotification = captor.getValue();
+        assertEquals(42L, savedNotification.getTaskId());
+        assertEquals(7L, savedNotification.getUserId());
+        assertEquals("Task 42 created", savedNotification.getText());
     }
 
     @Test
     void handleTaskEvent_update_shouldCallCreateNotificationWithCorrectData() {
         TaskEvent updateEvent = new TaskEvent(TaskEventTypeEnum.UPDATE, 13L, 5L);
 
-        spyService.handleTaskEvent(updateEvent);
+        notificationService.handleTaskEvent(updateEvent);
 
-        verify(spyService, times(1))
-                .createNotification(notificationCaptor.capture());
+        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+        verify(notificationRepository, times(1)).save(captor.capture());
 
-        Notification n = notificationCaptor.getValue();
+        Notification n = captor.getValue();
         assertEquals(13L, n.getTaskId());
         assertEquals(5L,  n.getUserId());
         assertEquals("Task 13 completed", n.getText());

@@ -1,5 +1,6 @@
 package main.lab1.services.implementation;
 
+import main.lab1.exceptions.ExternalServiceUnavailableException;
 import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.kafkaEvents.TaskEvent;
 import main.lab1.kafkaEvents.TaskEventTypeEnum;
@@ -16,7 +17,12 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 @Service
@@ -79,6 +85,19 @@ public class TaskServiceImpl implements TaskService {
         Task taskToDelete = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
         taskRepository.deleteById(id);
+        try {
+            kafkaTemplate.send(taskEventTopic,
+                            new TaskEvent(TaskEventTypeEnum.DELETE,
+                                    taskToDelete.getTaskId(),
+                                    taskToDelete.getUserId()))
+                    .get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new ExternalServiceUnavailableException(
+                    "Interrupted Kafka task deletion request for taskId = " + taskToDelete.getTaskId(), e);
+        } catch (ExecutionException | TimeoutException e) {
+            throw new ExternalServiceUnavailableException(
+                    "Failed to send delete event to Kafka for taskId = " + taskToDelete.getTaskId(), e);
+        }
         return taskToDelete;
     }
 
@@ -107,4 +126,12 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getTasksByUserId(long id) {
         return taskRepository.findByUserIdAndIsCompletedFalse(id);
     }
+
+    @Override
+    public List<Task> findExpiredCompletedTasks(ZonedDateTime now) {
+        return taskRepository.findByIsCompletedTrueAndExpiresAtBefore(now);
+    }
+
+
+
 }

@@ -19,11 +19,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -43,6 +43,9 @@ public class TaskServiceTest {
     @Mock
     private KafkaTemplate<String, Object> kafkaTemplate;
 
+    @Mock
+    private CompletableFuture<SendResult<String, Object>> mockKafkaSendFuture;
+
     @InjectMocks
     private TaskServiceImpl taskService;
 
@@ -55,10 +58,14 @@ public class TaskServiceTest {
     void setUp()
     {
         ReflectionTestUtils.setField(taskService, "taskEventTopic", "${kafka.topic.task-event}");
-        taskUser1 = new Task(1, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        task2User1 = new Task(2, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        taskUser2 = new Task(3, 2, "Title", "Description", ZonedDateTime.now().plusHours(3));
-        invalidTask = new Task(-1, -1, "Title", "Description", ZonedDateTime.now().plusHours(3));
+        taskUser1 = new Task(1, 1,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
+        task2User1 = new Task(2, 1,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
+        taskUser2 = new Task(3, 2,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
+        invalidTask = new Task(-1, -1,
+                "Title", "Description", ZonedDateTime.now().plusHours(3));
     }
     @Test
     void createTask_ForNonExistentUserId_ShouldThrowUserNotFoundException() {
@@ -163,13 +170,16 @@ public class TaskServiceTest {
     }
 
     @Test
-    void deleteTaskById_WithExistingTaskId_ShouldRemoveOneTask() {
-
+    void deleteTaskById_WithExistingTaskId_ShouldRemoveOneTask()  {
         long taskIdToDelete = taskUser1.getTaskId();
         when(taskRepository.findById(taskIdToDelete)).thenReturn(Optional.of(taskUser1));
         doNothing().when(taskRepository).deleteById(taskIdToDelete);
+        when(kafkaTemplate
+                .send("${kafka.topic.task-event}", new TaskEvent(TaskEventTypeEnum.DELETE,1L,1L)))
+                .thenReturn(mockKafkaSendFuture);
 
         assertDoesNotThrow(()->taskService.deleteTaskById(taskIdToDelete));
+
         when(taskRepository.findById(taskIdToDelete)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,()->taskService.getTaskById(taskIdToDelete));

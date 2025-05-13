@@ -1,6 +1,7 @@
 package main.lab1.controllerTests;
 
 import main.lab1.controllers.TaskController;
+import main.lab1.exceptions.ExternalServiceUnavailableException;
 import main.lab1.exceptions.ResourceNotFoundException;
 import main.lab1.model.Task;
 import main.lab1.exceptions.DuplicateResourceException;
@@ -13,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.ZonedDateTime;
@@ -68,7 +71,8 @@ public class TaskControllerTest {
     void getTaskById_WithExistingId_ReturnsEntityWithTask() {
         // Arrange
         long taskId = 1;
-        Task mockTask = new Task(1,1,"Title","Description", ZonedDateTime.now().plusHours(3));
+        Task mockTask = new Task(1,1,
+                "Title","Description", ZonedDateTime.now().plusHours(3));
 
         when(taskService.getTaskById(taskId)).thenReturn(mockTask);
         ResponseEntity<Task> response = taskController.getTaskById(taskId);
@@ -95,10 +99,13 @@ public class TaskControllerTest {
         long userId = 1;
 
 
-        Task task1User1 = new Task(1,userId,"Title1","Description1", ZonedDateTime.now().plusHours(3));
+        Task task1User1 = new Task(1,userId,
+                "Title1","Description1", ZonedDateTime.now().plusHours(3));
         System.out.println(task1User1.getExpiresAt());
-        Task task2User1 = new Task(2,userId,"Title2","Description2", ZonedDateTime.now().plusHours(3));
-        Task task1User2 = new Task(3,userId+1,"Title3","Description3", ZonedDateTime.now().plusHours(3));
+        Task task2User1 = new Task(2,userId,
+                "Title2","Description2", ZonedDateTime.now().plusHours(3));
+        Task task1User2 = new Task(3,userId+1,
+                "Title3","Description3", ZonedDateTime.now().plusHours(3));
 
         when(taskService.getTasksByUserId(userId)).thenReturn(
                 Arrays.asList(task1User1,  task2User1)
@@ -133,7 +140,8 @@ public class TaskControllerTest {
     @Test
     void createTask_NewTask_CallsService() {
 
-        Task newTask = new Task(1,1,"Title","Description", ZonedDateTime.now().plusHours(3));
+        Task newTask = new Task(1,1,
+                "Title","Description", ZonedDateTime.now().plusHours(3));
         //doNothing().when(taskService).createTask(newTask);
         when(taskService.createTask(newTask)).thenReturn(newTask);
         assertDoesNotThrow(
@@ -145,35 +153,37 @@ public class TaskControllerTest {
     @Test
     void createTask_DuplicateTask_ThrowsDuplicateResourceException() {
         long duplicateTaskId = 1;
-        Task duplicateTask = new Task(duplicateTaskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
+        Task duplicateTask = new Task(duplicateTaskId,1,
+                "Title","Description", ZonedDateTime.now().plusHours(3));
 
         doThrow(new DuplicateResourceException("Task with id " + duplicateTaskId +" already exists"))
                 .when(taskService).createTask(duplicateTask);
         //ResponseEntity<List<Task>> response = taskController.createTask(duplicateTask);
         assertThrows(DuplicateResourceException.class,
                 () -> taskController.createTask(duplicateTask));
-        verify(taskService, times(1)).createTask(duplicateTask);//is there really any reason to check that?
+        verify(taskService, times(1)).createTask(duplicateTask);
     }
-    @Test //actually it is completely useless because its just a copypaste from the previous test
+    @Test
     void createTask_ForNonExistentUser_ThrowsUserNotFoundException() {
         long nonExistentUserId = -1;
-        Task impossibleTask = new Task(1,nonExistentUserId,"Title","Description", ZonedDateTime.now().plusHours(3));
+        Task impossibleTask = new Task(1,nonExistentUserId,
+                "Title","Description", ZonedDateTime.now().plusHours(3));
 
         doThrow(new ResourceNotFoundException("User with id" + nonExistentUserId + " not found"))
                 .when(taskService).createTask(impossibleTask);
 
         assertThrows(ResourceNotFoundException.class,
                 () -> taskController.createTask(impossibleTask));
-        verify(taskService, times(1)).createTask(impossibleTask);//is there really any reason to check that?
+        verify(taskService, times(1)).createTask(impossibleTask);
     }
 
-    @Test //so its just a unit test, we actually dont care if it really deletes anything?
+    @Test
     void deleteTask_ForExistingTask_CallsService()
     {
         long taskId = 1;
-        Task task = new Task(taskId,1,"Title","Description", ZonedDateTime.now().plusHours(3));
+        Task task = new Task(taskId,1,
+                "Title","Description", ZonedDateTime.now().plusHours(3));
 
-       // doNothing().when(taskService).deleteTaskById(taskId);
         when(taskService.deleteTaskById(taskId)).thenReturn(task);
         assertDoesNotThrow(
                 ()->taskController.deleteTask(taskId)
@@ -198,7 +208,8 @@ public class TaskControllerTest {
     @Test
     void handleDuplicateResourceException_ReturnsConflictStatus() {
         long duplicateTaskId = 1;
-        DuplicateResourceException ex = new DuplicateResourceException("Task with id " + duplicateTaskId +" already exists");
+        DuplicateResourceException ex =
+                new DuplicateResourceException("Task with id " + duplicateTaskId +" already exists");
         ResponseEntity<String> response = taskController.handleDuplicateResourceException(ex);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
@@ -210,4 +221,13 @@ public class TaskControllerTest {
         ResponseEntity<String> response = taskController.handleResourceNotFoundException(ex);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
+
+    @Test
+    void handleServiceUnavailableException_ReturnsServiceUnavailableStatus() {
+        ExternalServiceUnavailableException ex =
+                new ExternalServiceUnavailableException("Message", new Throwable());
+        ResponseEntity<String> response = taskController.handleExternalServiceUnavailableException(ex);
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.getStatusCode());
+    }
+
 }
