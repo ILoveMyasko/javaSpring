@@ -47,9 +47,8 @@ public class TaskController {
     }
 
     @PatchMapping("/complete/{id}")
-    public ResponseEntity<Void> markAsCompleted(@PathVariable long id) {
-        taskService.markAsCompleted(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Task> markAsCompleted(@PathVariable long id) {
+        return ResponseEntity.ok(taskService.markAsCompleted(id));
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
