@@ -44,26 +44,30 @@ public class NotificationServiceImpl implements NotificationService {
     //now we have this async handler instead of manual task creations
     @Transactional
     @KafkaListener(topics = "task-events")
-    public void handleTaskEvent(TaskEvent event) {
-        switch (event.eventType()){
+    public void handleTaskEvent(TaskEvent taskEvent) {
+        switch (taskEvent.eventType()){
             case CREATE: {
                 Notification notification = new Notification();
-                notification.setTaskId(event.taskId());
-                notification.setUserId(event.userId());
-                notification.setText("Task " + event.taskId()+" created");
-                this.createNotification(notification);
+                notification.setTaskId(taskEvent.taskId());
+                notification.setUserId(taskEvent.userId());
+                notification.setText("Task " + taskEvent.taskId()+" created");
+                notificationRepository.save(notification);
                 break;
             }
             case UPDATE: {
                 Notification notification = new Notification();
-                notification.setTaskId(event.taskId());
-                notification.setUserId(event.userId());
-                notification.setText("Task " + event.taskId()+" completed");
-                this.createNotification(notification);
+                notification.setTaskId(taskEvent.taskId());
+                notification.setUserId(taskEvent.userId());
+                notification.setText("Task " + taskEvent.taskId()+" completed");
+                notificationRepository.save(notification);
+                break;
+            }
+            case DELETE: {
+                notificationRepository.deleteByTaskId(taskEvent.taskId());
                 break;
             }
             default: {
-                System.out.println("No actions implemented for event type: " + event.eventType());
+                System.out.println("No actions implemented for taskEvent type: " + taskEvent.eventType());
             }
         }
 
