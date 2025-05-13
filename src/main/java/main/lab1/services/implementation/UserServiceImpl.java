@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public User createUser(User newUser) {
-        if (userRepository.existsByEmail(newUser.getEmail()))
+        if (userRepository.existsByEmailIgnoreCase(newUser.getEmail()))
         {
             throw new DuplicateResourceException("User with email " + newUser.getEmail() + " already exists");
         }

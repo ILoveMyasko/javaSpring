@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserRepository {
 
     boolean existsById (long id);
-    boolean existsByEmail (String email);
+    boolean existsByEmailIgnoreCase (String email);
     User save (User newUser);
     Optional<User> findById(long id);
     List<User> findAll();

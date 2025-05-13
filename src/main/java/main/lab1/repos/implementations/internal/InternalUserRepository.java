@@ -19,7 +19,7 @@ public class InternalUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
+    public boolean existsByEmailIgnoreCase(String email) {
         return users.values()
                     .stream()
                     .anyMatch(user -> user.getEmail().equalsIgnoreCase(email));

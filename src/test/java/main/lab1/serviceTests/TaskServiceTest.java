@@ -1,6 +1,8 @@
 package main.lab1.serviceTests;
 
 import main.lab1.exceptions.ResourceNotFoundException;
+import main.lab1.kafkaEvents.TaskEvent;
+import main.lab1.kafkaEvents.TaskEventTypeEnum;
 import main.lab1.model.Task;
 import main.lab1.repos.TaskRepository;
 import main.lab1.services.NotificationService;
@@ -10,12 +12,18 @@ import main.lab1.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,6 +40,9 @@ public class TaskServiceTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
     @InjectMocks
     private TaskServiceImpl taskService;
 
@@ -43,13 +54,12 @@ public class TaskServiceTest {
     @BeforeEach
     void setUp()
     {
+        ReflectionTestUtils.setField(taskService, "taskEventTopic", "${kafka.topic.task-event}");
         taskUser1 = new Task(1, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
         task2User1 = new Task(2, 1, "Title", "Description", ZonedDateTime.now().plusHours(3));
         taskUser2 = new Task(3, 2, "Title", "Description", ZonedDateTime.now().plusHours(3));
-
         invalidTask = new Task(-1, -1, "Title", "Description", ZonedDateTime.now().plusHours(3));
     }
-
     @Test
     void createTask_ForNonExistentUserId_ShouldThrowUserNotFoundException() {
         long invalidUserId = invalidTask.getUserId();
@@ -185,13 +195,14 @@ public class TaskServiceTest {
         taskService.markAsCompleted(1L);
 
         assertTrue(task.isCompleted());
-        verify(notificationService).createNotification(
-                argThat(notification ->
-                        notification.getUserId() == 100L &&
-                                notification.getTaskId() == 1L &&
-                                notification.getText().equals("Task completed!")
-                )
-        );
+
+        ArgumentCaptor<TaskEvent> captor = ArgumentCaptor.forClass(TaskEvent.class);
+        verify(kafkaTemplate).send(eq("${kafka.topic.task-event}"), captor.capture());
+        TaskEvent sentEvent = captor.getValue();
+        assertEquals(TaskEventTypeEnum.UPDATE, sentEvent.eventType());
+        assertEquals(1L, sentEvent.taskId());
+        assertEquals(100L, sentEvent.userId());
+
     }
     @Test
     void markAsCompleted_shouldThrowWhenTaskNotFound() {

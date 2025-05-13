@@ -1,22 +1,22 @@
 package main.lab1.services.implementation;
 
 import main.lab1.exceptions.ResourceNotFoundException;
+import main.lab1.kafkaEvents.TaskEvent;
+import main.lab1.kafkaEvents.TaskEventTypeEnum;
 import main.lab1.model.Task;
-import main.lab1.model.Notification;
 import main.lab1.repos.TaskRepository;
 
-import main.lab1.services.NotificationService;
 import main.lab1.services.TaskService;
 import main.lab1.services.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -24,14 +24,17 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserService userService;
-    private final NotificationService notificationService;
+    private final KafkaTemplate<String, TaskEvent> kafkaTemplate;
+    private final String taskEventTopic;
 
     public TaskServiceImpl(TaskRepository taskRepository,
                            UserService userService,
-                           NotificationService notificationService) {
+                           KafkaTemplate<String, TaskEvent> kafkaTemplate,
+                           @Value("${kafka.topic.task-event}") String taskEventTopic) {
         this.taskRepository = taskRepository;
         this.userService = userService;
-        this.notificationService = notificationService;
+        this.kafkaTemplate = kafkaTemplate;
+        this.taskEventTopic = taskEventTopic;
     }
 
     @Transactional(readOnly = true)
@@ -52,8 +55,12 @@ public class TaskServiceImpl implements TaskService {
             throw new ResourceNotFoundException("User with id " + newTask.getUserId() + " not found");
         }
         Task savedTask =  taskRepository.save(newTask);
-        notificationService.createNotification(
-                new Notification(savedTask.getUserId(),savedTask.getTaskId(), "Task created!"));
+
+        kafkaTemplate.send(taskEventTopic, new TaskEvent(
+                TaskEventTypeEnum.CREATE,
+                savedTask.getTaskId(),
+                savedTask.getUserId()));
+
         return savedTask;
     }
 
@@ -88,8 +95,10 @@ public class TaskServiceImpl implements TaskService {
         Task taskToUpdate = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task with id " + id + " not found"));
         taskToUpdate.setCompleted(true);
-        notificationService.createNotification(
-                new Notification(taskToUpdate.getUserId(), taskToUpdate.getTaskId(), "Task completed!"));
+        kafkaTemplate.send(taskEventTopic, new TaskEvent(
+                TaskEventTypeEnum.UPDATE,
+                taskToUpdate.getTaskId(),
+                taskToUpdate.getUserId()));
         return taskToUpdate;
     }
 

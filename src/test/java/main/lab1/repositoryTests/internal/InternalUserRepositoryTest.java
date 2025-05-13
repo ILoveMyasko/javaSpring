@@ -12,42 +12,42 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 
 public class InternalUserRepositoryTest {
 
-    private InternalUserRepository repository;
+    private InternalUserRepository userRepository;
 
     @BeforeEach
     void setUp() {
-        repository = new InternalUserRepository();
+        userRepository = new InternalUserRepository();
     }
 
     @Test
     void shouldAssignIdsStartingFromOneAndIncrement() {
         User u1 = new User();
         u1.setEmail("a@example.com");
-        User saved1 = repository.save(u1);
+        User saved1 = userRepository.save(u1);
 
         User u2 = new User();
         u2.setEmail("b@example.com");
-        User saved2 = repository.save(u2);
+        User saved2 = userRepository.save(u2);
 
         assertThat(saved1.getUserId()).isEqualTo(1L);
         assertThat(saved2.getUserId()).isEqualTo(2L);
 
-        assertThat(repository.existsById(1L)).isTrue();
-        assertThat(repository.existsById(2L)).isTrue();
+        assertThat(userRepository.existsById(1L)).isTrue();
+        assertThat(userRepository.existsById(2L)).isTrue();
     }
 
     @Test
     void existsByIdReturnsFalseForUnknownId() {
-        assertThat(repository.existsById(999L)).isFalse();
+        assertThat(userRepository.existsById(999L)).isFalse();
     }
 
     @Test
     void shouldSaveAndFindById() {
         User user = new User();
         user.setEmail("user@example.com");
-        User saved = repository.save(user);
+        User saved = userRepository.save(user);
 
-        Optional<User> found = repository.findById(saved.getUserId());
+        Optional<User> found = userRepository.findById(saved.getUserId());
 
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("user@example.com");
@@ -55,7 +55,7 @@ public class InternalUserRepositoryTest {
 
     @Test
     void findByIdReturnsEmptyOptionalForUnknownId() {
-        Optional<User> result = repository.findById(123L);
+        Optional<User> result = userRepository.findById(123L);
         assertThat(result).isEmpty();
     }
 
@@ -63,10 +63,10 @@ public class InternalUserRepositoryTest {
     void findAll_ShouldReturnAllUsers() {
         User u1 = new User(); u1.setEmail("one@example.com");
         User u2 = new User(); u2.setEmail("two@example.com");
-        repository.save(u1); // ID = 1
-        repository.save(u2); // ID = 2
+        userRepository.save(u1); // ID = 1
+        userRepository.save(u2); // ID = 2
 
-        List<User> all = repository.findAll();
+        List<User> all = userRepository.findAll();
 
         assertThat(all).hasSize(2)
                 .extracting(User::getUserId, User::getEmail)
@@ -80,10 +80,10 @@ public class InternalUserRepositoryTest {
     void existsByEmailIsCaseInsensitive() {
         User u = new User();
         u.setEmail("Test@Example.COM");
-        repository.save(u);
+        userRepository.save(u);
 
-        assertThat(repository.existsByEmail("test@example.com")).isTrue();
-        assertThat(repository.existsByEmail("TEST@example.com")).isTrue();
-        assertThat(repository.existsByEmail("nope@example.com")).isFalse();
+        assertThat(userRepository.existsByEmailIgnoreCase("test@example.com")).isTrue();
+        assertThat(userRepository.existsByEmailIgnoreCase("TEST@example.com")).isTrue();
+        assertThat(userRepository.existsByEmailIgnoreCase("nope@example.com")).isFalse();
     }
 }

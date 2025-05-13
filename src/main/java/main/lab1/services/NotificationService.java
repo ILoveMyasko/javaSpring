@@ -13,5 +13,5 @@ public interface NotificationService {
 
     List<Notification> getNotificationsByTaskId(long userId);
 
-    Notification createNotification(Notification notification);
+    Notification createNotification(Notification notification); // replaced with kafka async listener
 }
