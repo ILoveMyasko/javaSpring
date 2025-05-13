@@ -3,6 +3,7 @@ package main.lab1.repos;
 import main.lab1.model.Task;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +18,5 @@ public interface TaskRepository {
     List<Task> findByUserId(long id);
     List<Task> findByUserIdAndIsCompletedFalse(long id);
     void deleteById(long id);
+    List<Task> findByIsCompletedTrueAndExpiresAtAfter(ZonedDateTime moment);
 }

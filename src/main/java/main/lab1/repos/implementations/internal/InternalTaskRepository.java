@@ -5,6 +5,7 @@ import main.lab1.model.Task;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,7 +40,10 @@ public class InternalTaskRepository implements TaskRepository {
 
     @Override
     public List<Task> findByUserIdAndIsCompletedFalse(long id) {
-        return tasks.values().stream().filter(task -> task.getUserId() == id && !task.isCompleted()).toList();
+        return tasks.values()
+                .stream()
+                .filter(task -> task.getUserId() == id && !task.isCompleted())
+                .toList();
     }
 
     @Override
@@ -50,5 +54,14 @@ public class InternalTaskRepository implements TaskRepository {
     @Override
     public void deleteById(long id) {
        tasks.remove(id);
+    }
+
+    @Override
+    public List<Task> findByIsCompletedTrueAndExpiresAtAfter(ZonedDateTime moment) {
+        return tasks.values()
+                .stream()
+                .filter(task-> task.isCompleted() &&
+                        task.getExpiresAt().isAfter(moment))
+                .toList();
     }
 }
