@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @AllArgsConstructor
@@ -25,8 +24,9 @@ public class SchedulerServiceImpl implements SchedulerService {
         List<Task> tasksToDelete = taskService.findExpiredCompletedTasks(ZonedDateTime.now());
         tasksToDelete.forEach(task ->
         {
+            System.out.println("Deleting task with: taskId = " + task.getTaskId() + " userId = " + task.getUserId() );
             taskService.deleteTaskById(task.getTaskId());
-            System.out.println("Task id = " + task.getTaskId() + " User id = " + task.getUserId() );
         });
     }
+
 }
