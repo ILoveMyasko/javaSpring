@@ -1,20 +1,21 @@
 package main.lab1.serviceTests;
+import main.lab1.kafkaEvents.TaskEvent;
+import main.lab1.kafkaEvents.TaskEventTypeEnum;
 import main.lab1.model.Notification;
 import main.lab1.repos.NotificationRepository;
+import main.lab1.services.NotificationService;
 import main.lab1.services.implementation.NotificationServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 //unit tests
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +27,11 @@ public class NotificationServiceTest {
     @InjectMocks
     private NotificationServiceImpl notificationService;
 
+    private NotificationServiceImpl spyService;
+
+    @Captor
+    private ArgumentCaptor<Notification> notificationCaptor;
+
     private Notification notificationToSave;
     private Notification notificationUser1Task1;
     private Notification notificationUser1Task2;
@@ -34,6 +40,7 @@ public class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
+        spyService = Mockito.spy(notificationService);
         notificationToSave = new Notification(1,1,1,"Just Notification");
         notificationUser1Task1 = new Notification(1,1,1,"Notification User1Task1");
         notificationUser1Task2 = new Notification(2,1,2,"Notification User1Task2");
@@ -127,6 +134,36 @@ public class NotificationServiceTest {
         assertTrue(userNotifications.isEmpty());
         verify(notificationRepository).findByTaskId(0L);
 
+    }
+
+    @Test
+    void handleTaskEvent_create_shouldCallCreateNotificationWithCorrectData() {
+        TaskEvent createEvent = new TaskEvent(TaskEventTypeEnum.CREATE, 42L, 7L);
+
+        spyService.handleTaskEvent(createEvent);
+
+        verify(spyService, times(1))
+                .createNotification(notificationCaptor.capture());
+
+        Notification n = notificationCaptor.getValue();
+        assertEquals(42L, n.getTaskId());
+        assertEquals(7L,  n.getUserId());
+        assertEquals("Task 42 created", n.getText());
+    }
+
+    @Test
+    void handleTaskEvent_update_shouldCallCreateNotificationWithCorrectData() {
+        TaskEvent updateEvent = new TaskEvent(TaskEventTypeEnum.UPDATE, 13L, 5L);
+
+        spyService.handleTaskEvent(updateEvent);
+
+        verify(spyService, times(1))
+                .createNotification(notificationCaptor.capture());
+
+        Notification n = notificationCaptor.getValue();
+        assertEquals(13L, n.getTaskId());
+        assertEquals(5L,  n.getUserId());
+        assertEquals("Task 13 completed", n.getText());
     }
 
 }
