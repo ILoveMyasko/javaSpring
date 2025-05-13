@@ -18,5 +18,5 @@ public interface TaskRepository {
     List<Task> findByUserId(long id);
     List<Task> findByUserIdAndIsCompletedFalse(long id);
     void deleteById(long id);
-    List<Task> findByIsCompletedTrueAndExpiresAtAfter(ZonedDateTime moment);
+    List<Task> findByIsCompletedTrueAndExpiresAtBefore(ZonedDateTime moment);
 }

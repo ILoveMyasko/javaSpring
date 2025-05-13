@@ -57,11 +57,11 @@ public class InternalTaskRepository implements TaskRepository {
     }
 
     @Override
-    public List<Task> findByIsCompletedTrueAndExpiresAtAfter(ZonedDateTime moment) {
+    public List<Task> findByIsCompletedTrueAndExpiresAtBefore(ZonedDateTime moment) {
         return tasks.values()
                 .stream()
                 .filter(task-> task.isCompleted() &&
-                        task.getExpiresAt().isAfter(moment))
+                        task.getExpiresAt().isBefore(moment))
                 .toList();
     }
 }

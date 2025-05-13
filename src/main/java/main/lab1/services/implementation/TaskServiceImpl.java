@@ -129,7 +129,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> findExpiredCompletedTasks(ZonedDateTime now) {
-        return taskRepository.findByIsCompletedTrueAndExpiresAtAfter(now);
+        return taskRepository.findByIsCompletedTrueAndExpiresAtBefore(now);
     }
 
 
